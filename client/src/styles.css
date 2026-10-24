@@ -1,0 +1,180 @@
+/* Colors are defined once as variables, then swapped for dark mode. */
+:root {
+  --bg: #fbfaf6;
+  --surface: #ffffff;
+  --text: #1d2330;
+  --muted: #5d6475;
+  --border: #e3e0d6;
+  --accent: #b7791f;       /* wheat gold */
+  --accent-strong: #8a5a12;
+  --sky: #1f4e79;          /* prairie sky blue */
+  --row-alt: #f6f4ee;
+  --error: #b42318;
+  color-scheme: light dark;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #12151c;
+    --surface: #1a1e27;
+    --text: #e8e6e1;
+    --muted: #a0a6b4;
+    --border: #2c3240;
+    --accent: #e0a84a;
+    --accent-strong: #f0c070;
+    --sky: #8fb8e0;
+    --row-alt: #1e232d;
+    --error: #f97066;
+  }
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font: 16px/1.6 system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+}
+
+a { color: var(--sky); }
+
+.wrap {
+  max-width: 1040px;
+  margin: 0 auto;
+  padding: 0 16px;
+}
+
+main.wrap { padding-top: 32px; padding-bottom: 64px; min-height: 70vh; }
+
+/* Header and navigation */
+.site-header {
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+}
+.header-inner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding-top: 12px;
+  padding-bottom: 12px;
+}
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--text);
+  font-weight: 700;
+  text-decoration: none;
+}
+.brand-mark {
+  background: var(--accent);
+  color: #fff;
+  border-radius: 6px;
+  padding: 2px 8px;
+  font-size: 14px;
+  letter-spacing: 0.05em;
+}
+nav { display: flex; flex-wrap: wrap; gap: 4px; }
+nav a {
+  color: var(--muted);
+  text-decoration: none;
+  padding: 6px 10px;
+  border-radius: 6px;
+}
+nav a:hover { color: var(--text); background: var(--row-alt); }
+nav a.active { color: var(--accent-strong); font-weight: 600; }
+
+/* Home page */
+.hero {
+  padding: 32px 0 24px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 24px;
+}
+.hero h1 { font-size: clamp(2rem, 5vw, 3rem); line-height: 1.15; margin: 0 0 8px; }
+.lead { font-size: 1.2rem; color: var(--muted); margin: 0 0 20px; }
+.next-round {
+  display: inline-block;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-left: 4px solid var(--accent);
+  border-radius: 8px;
+  padding: 10px 14px;
+  margin-bottom: 20px;
+}
+.next-round .label {
+  display: block;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--muted);
+}
+.actions { display: flex; flex-wrap: wrap; gap: 10px; }
+.button {
+  display: inline-block;
+  background: var(--accent);
+  color: #fff;
+  padding: 10px 18px;
+  border-radius: 8px;
+  text-decoration: none;
+  font-weight: 600;
+}
+.button:hover { background: var(--accent-strong); }
+.button.secondary {
+  background: transparent;
+  color: var(--text);
+  border: 1px solid var(--border);
+}
+
+/* Markdown pages */
+.prose { max-width: 720px; }
+.prose h1 { margin-top: 0; }
+.prose h2 { margin-top: 2rem; }
+
+/* Tables */
+.title-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.picker { display: flex; align-items: center; gap: 8px; color: var(--muted); }
+.picker select {
+  font: inherit;
+  padding: 6px 10px;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text);
+}
+.table-scroll { overflow-x: auto; border: 1px solid var(--border); border-radius: 8px; background: var(--surface); }
+table { width: 100%; border-collapse: collapse; }
+th, td { padding: 10px 14px; text-align: left; border-bottom: 1px solid var(--border); white-space: nowrap; }
+th { font-size: 13px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--muted); background: var(--row-alt); }
+tbody tr:last-child td { border-bottom: none; }
+tbody tr:nth-child(even) { background: var(--row-alt); }
+.num { text-align: right; font-variant-numeric: tabular-nums; }
+.strong { font-weight: 700; }
+.rank { color: var(--muted); }
+.standings tbody tr:nth-child(1) .rank { color: var(--accent-strong); font-weight: 700; }
+.team { font-weight: 600; }
+.school { display: block; font-size: 13px; color: var(--muted); }
+
+.muted { color: var(--muted); }
+.error { color: var(--error); }
+
+.site-footer {
+  border-top: 1px solid var(--border);
+  padding: 24px 0;
+  font-size: 14px;
+}
+.site-footer p { margin: 4px 0; }
+
+.title-row h1 { margin-bottom: 8px; }
+
+@media (max-width: 480px) {
+  nav a { padding: 6px 8px; }
+}
