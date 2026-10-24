@@ -53,7 +53,7 @@ You need **Node.js 22+** and **Postgres 16+**.
 6. **Create the tables and sample data:**
    ```sh
    npm run db:migrate   # runs server/src/db/migrations/*.sql in order
-   npm run db:seed      # adds a sample season so the pages aren't empty
+   npm run db:seed      # adds the 2026–27 schedule
    ```
 7. **Start everything:**
    ```sh
@@ -69,7 +69,7 @@ You need **Node.js 22+** and **Postgres 16+**.
 | `npm run dev` | API + website with live reload |
 | `npm test` | Runs the scraper tests (no network or database needed) |
 | `npm run db:migrate` | Applies any new migration files |
-| `npm run db:seed` | Adds sample data to an empty database |
+| `npm run db:seed` | Adds the 2026–27 schedule to an empty database |
 | `npm run scrape -- --round 3` | Scrapes round 3 of the current season from Kattis |
 | `npm run scrape -- --recent` | Scrapes every round that ended in the last 48 hours |
 | `npm run scrape -- --file page.html` | Parses a saved standings page and prints it |
@@ -95,23 +95,24 @@ The parser (`server/scraper/parseStandings.js`) finds the table by its column he
 written against a sample page; see `server/scraper/fixtures/README.md` for how to check
 it against a real league contest.
 
-To add a round, insert a row into `rounds` with its Kattis contest URL, for example:
-
-```sql
-INSERT INTO rounds (season_id, number, starts_at, format, kattis_url)
-VALUES (1, 5, '2026-12-05 13:00-06', 'Full', 'https://open.kattis.com/contests/abc123');
-```
+Rounds without a Kattis link yet are skipped.
 
 ## Changing the content
 
-- About, rules and links are Markdown files in `client/src/content/`.
-- League name, contact email and time zone are in `client/src/config.js`.
+- About (home page), rules, prizes, ACPC and links are Markdown files in `client/src/content/`.
+- League name and contact email are in `client/src/config.js`.
+- Contest dates are rows in the `rounds` table. When a contest is created on Kattis, add its links:
+  ```sql
+  UPDATE rounds SET kattis_url = 'https://open.kattis.com/contests/abc123',
+                    upsolve_kattis_url = 'https://open.kattis.com/contests/def456'
+  WHERE number = 1;
+  ```
 - The season scoring rule is the SQL query in `server/src/routes/leaderboard.js`.
 
 ## Still to do
 
-- [ ] Real league description, rules, links and sponsors (the current text is placeholder)
-- [ ] Real season dates and Kattis contest links (replace the seed data)
+- [ ] Kattis contest links for each round
+- [ ] Real contact email and Discord/social links
 - [ ] Confirm with Kattis that we may display standings publicly
-- [ ] Pick the season scoring rule
+- [ ] Decide whether the site should track draw tickets (needs a student roster)
 - [ ] Choose a host and deploy

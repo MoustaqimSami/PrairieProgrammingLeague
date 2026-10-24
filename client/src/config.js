@@ -3,7 +3,7 @@ export const league = {
   name: 'Prairie Programming League',
   shortName: 'PPL',
   contactEmail: 'league@example.com', // TODO: real contact address
-  // Times on the schedule are shown in this time zone.
-  timeZone: 'America/Winnipeg',
-  timeZoneLabel: 'Central',
+  // Times come from the API already in league time (see server/src/routes/rounds.js).
+  // Since November 2026 Alberta and Saskatchewan share the same clock time.
+  timeZoneLabel: 'Alberta/Saskatchewan',
 };

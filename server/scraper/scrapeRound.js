@@ -5,6 +5,10 @@ import { saveResults } from './saveResults.js';
 
 // Scrapes one round: fetch its standings page, parse it, save the results.
 export async function scrapeRound(round) {
+  if (!round.kattis_url) {
+    console.warn(`round ${round.number}: no Kattis link yet, skipping`);
+    return 0;
+  }
   const html = await fetchStandingsHtml(round.kattis_url);
   const rows = parseStandings(html);
   // An empty table usually means the page changed or the contest hasn't started.
@@ -23,7 +27,8 @@ export async function scrapeRound(round) {
 export async function recentRounds() {
   const { rows } = await pool.query(`
     SELECT * FROM rounds
-    WHERE starts_at <= now()
+    WHERE kattis_url IS NOT NULL
+      AND starts_at <= now()
       AND starts_at + make_interval(mins => duration_min) + interval '48 hours' >= now()
     ORDER BY starts_at
   `);

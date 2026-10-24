@@ -1,17 +1,18 @@
 # Links
 
+## The league
+
+- [Kattis](https://open.kattis.com): every PPL contest is hosted here. Make an account before your first contest.
+- Email: league@example.com
+
 ## Contests
 
-- [Kattis](https://open.kattis.com): where every round is hosted
+- [ACPC](/acpc): the Alberta Collegiate Programming Contest, every fall
+- [UAPC](https://uapspc.github.io/uapc/index.html): the University of Alberta Programming Contest, every March
 - [ICPC](https://icpc.global): the International Collegiate Programming Contest
 
 ## Practice
 
-- [Kattis problem archive](https://open.kattis.com/problems)
+- [Kattis problem archive](https://open.kattis.com/problems): sort by difficulty and start at 1 to 3
 - [Competitive Programmer's Handbook](https://cses.fi/book/book.pdf) by Antti Laaksonen
 - [CSES Problem Set](https://cses.fi/problemset/)
-
-## Community
-
-- Discord: coming soon
-- Email: league@example.com

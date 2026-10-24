@@ -1,7 +1,11 @@
-// Fills an empty database with a sample season so the site has something to show.
+// Fills an empty database with the 2026–27 season schedule.
 // Run with: npm run db:seed (safe to re-run; it skips if a season already exists).
+//
+// Contests are on the second Saturday of each month, November to April:
+// in person 11:00 a.m. to 1:30 p.m., then upsolving until noon the next Friday.
+// Kattis links are added later, once each contest is created on Kattis:
+//   UPDATE rounds SET kattis_url = '...', upsolve_kattis_url = '...' WHERE number = 1;
 import { pool } from './pool.js';
-import { saveResults } from '../../scraper/saveResults.js';
 
 const { rows: existing } = await pool.query('SELECT 1 FROM seasons LIMIT 1');
 if (existing.length) {
@@ -13,39 +17,22 @@ if (existing.length) {
 const {
   rows: [season],
 } = await pool.query(
-  `INSERT INTO seasons (name, starts_on) VALUES ('Fall 2026', '2026-09-12') RETURNING id`,
+  `INSERT INTO seasons (name, starts_on) VALUES ('2026–27', '2026-11-14') RETURNING id`,
 );
 
-// Placeholder rounds. Replace the dates and Kattis links with the real ones.
-const rounds = [
-  [1, '2026-09-12 13:00-05', 'Full', 'https://open.kattis.com/contests/example1'],
-  [2, '2026-10-03 13:00-05', 'Sprint', 'https://open.kattis.com/contests/example2'],
-  [3, '2026-10-24 13:00-05', 'Full', 'https://open.kattis.com/contests/example3'],
-  [4, '2026-11-14 13:00-06', 'Full', 'https://open.kattis.com/contests/example4'],
-];
-const roundIds = [];
-for (const [number, startsAt, format, url] of rounds) {
-  const { rows } = await pool.query(
-    `INSERT INTO rounds (season_id, number, starts_at, format, kattis_url)
-     VALUES ($1, $2, $3, $4, $5) RETURNING id`,
-    [season.id, number, startsAt, format, url],
+const contestDays = ['2026-11-14', '2026-12-12', '2027-01-09', '2027-02-13', '2027-03-13', '2027-04-10'];
+
+for (const [i, day] of contestDays.entries()) {
+  // Times are Alberta time. AT TIME ZONE turns a local time into an exact moment.
+  await pool.query(
+    `INSERT INTO rounds (season_id, number, starts_at, duration_min, format, upsolve_ends_at)
+     VALUES ($1, $2,
+             ($3::date + time '11:00') AT TIME ZONE 'America/Edmonton',
+             150, 'In person',
+             ($3::date + 6 + time '12:00') AT TIME ZONE 'America/Edmonton')`,
+    [season.id, i + 1, day],
   );
-  roundIds.push(rows[0].id);
 }
 
-// Made-up results for the first two rounds, in the same shape the scraper produces.
-await saveResults(roundIds[0], [
-  { team: 'Segfault Saskatoon', rank: 1, solved: 7, penalty: 612 },
-  { team: 'Prairie Dogs', rank: 2, solved: 6, penalty: 501 },
-  { team: 'Off By One', rank: 3, solved: 6, penalty: 688 },
-  { team: 'Bison Search', rank: 4, solved: 4, penalty: 390 },
-]);
-await saveResults(roundIds[1], [
-  { team: 'Prairie Dogs', rank: 1, solved: 5, penalty: 280 },
-  { team: 'Bison Search', rank: 2, solved: 5, penalty: 331 },
-  { team: 'Segfault Saskatoon', rank: 3, solved: 4, penalty: 210 },
-  { team: 'Off By One', rank: 4, solved: 2, penalty: 95 },
-]);
-
-console.log('seeded sample season');
+console.log(`seeded the ${contestDays.length}-contest 2026–27 season`);
 await pool.end();

@@ -1,4 +1,4 @@
-import { useSearchParams } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import { useApi } from '../api.js';
 import Status from '../components/Status.jsx';
 
@@ -21,7 +21,7 @@ export default function Leaderboard() {
           >
             <option value="">Season standings</option>
             {played.map((r) => (
-              <option key={r.id} value={r.id}>Round {r.number}</option>
+              <option key={r.id} value={r.id}>Contest {r.number}</option>
             ))}
           </select>
         </label>
@@ -36,9 +36,12 @@ function SeasonTable({ rounds }) {
 
   return (
     <>
-      <p className="muted">Ranked by total problems solved, then by total penalty time (minutes).</p>
+      <p className="muted">
+        In-person results, ranked by total problems solved, then by total penalty time (minutes). Prizes are
+        awarded by draw, not by rank: see <Link to="/prizes">how prizes work</Link>.
+      </p>
       <Status loading={loading} error={error} />
-      {teams && teams.length === 0 && <p className="muted">No results yet. Check back after the first round.</p>}
+      {teams && teams.length === 0 && <p className="muted">No results yet. The first contest is on Saturday, November 14.</p>}
       {teams?.length > 0 && (
         <div className="table-scroll">
           <table className="standings">
@@ -49,7 +52,7 @@ function SeasonTable({ rounds }) {
                 <th className="num">Solved</th>
                 <th className="num">Penalty</th>
                 {rounds.map((r) => (
-                  <th key={r.id} className="num" title={`Round ${r.number}: solved (rank)`}>R{r.number}</th>
+                  <th key={r.id} className="num" title={`Contest ${r.number}: solved (rank)`}>C{r.number}</th>
                 ))}
               </tr>
             </thead>
@@ -86,9 +89,9 @@ function RoundTable({ roundId, round }) {
 
   return (
     <>
-      {round && (
+      {round?.kattis_url && (
         <p className="muted">
-          Round {round.number} · <a href={`${round.kattis_url}/standings`} target="_blank" rel="noreferrer">Full scoreboard on Kattis</a>
+          Contest {round.number} · <a href={`${round.kattis_url}/standings`} target="_blank" rel="noreferrer">Full scoreboard on Kattis</a>
           {round.last_scraped_at && <> · updated {new Date(round.last_scraped_at).toLocaleString('en-CA')}</>}
         </p>
       )}

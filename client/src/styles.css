@@ -178,3 +178,7 @@ tbody tr:nth-child(even) { background: var(--row-alt); }
 @media (max-width: 480px) {
   nav a { padding: 6px 8px; }
 }
+
+.link-list { display: inline-flex; gap: 12px; }
+.prose table { width: auto; margin: 1rem 0; border: 1px solid var(--border); }
+.prose td, .prose th { white-space: normal; vertical-align: top; }

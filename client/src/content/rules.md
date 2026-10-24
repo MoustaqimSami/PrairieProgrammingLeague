@@ -1,25 +1,32 @@
 # Rules
 
+## Eligibility
+
+You must be enrolled at a post-secondary institution or high school in Alberta, as an undergraduate or a full-time graduate student.
+
 ## Teams
 
-- Teams have up to three members, all from the same school.
-- Each team registers once per season and uses the same team name on Kattis for every round, so results can be matched across rounds.
+- Compete individually or as a team of 1, 2 or 3.
+- Problems are selected assuming individual competitors.
+- Upsolving is always individual, even if you competed in person as a team.
 
-## Contest format
+## In-person contest
 
-- **Full rounds** run for about 3 hours with roughly 8 to 12 problems.
-- **Sprint rounds** are shorter, with fewer problems.
-- Solutions may be written in any language Kattis supports.
+- Saturday, 11:00 a.m. to 1:30 p.m., at a participating university.
+- No internet access during the contest.
+- Coaches may help with the two easiest problems.
+- You must be physically at the university to earn in-person tickets.
 
-## Scoring
+## Upsolve contest
 
-- In each round, teams are ranked by number of problems solved.
-- Ties are broken by penalty time: the sum of the minutes at which each problem was solved, plus 20 minutes for each rejected submission on a problem that was eventually solved.
-- Season standings add up problems solved and penalty time across all rounds.
+- Opens at 1:30 p.m. Saturday, right after the in-person contest, and closes at noon the following Friday.
+- Internet access is fine, but **your code must be your own**. You may not copy someone else's solution, and you may not copy code from an LLM or other AI tool.
 
-## Conduct
+## Problems
 
-- Each team uses one computer at a time.
-- No communication with anyone outside the team during a round.
-- Printed or online reference material written before the contest is allowed. Generative AI tools are not.
-- Organizers may disqualify teams that break the rules.
+- Usually 6 to 7 problems per contest, with about 4 at Kattis difficulty 3 or lower. This is a guideline, not a promise.
+- All contests are hosted on [open.kattis.com](https://open.kattis.com).
+
+## Organizing committee
+
+The organizing committee is empowered to adjust for or adjudicate unforeseen events and conditions, and to adjust for any misconduct during the events. This might include removing some or all tickets from a student. Their decisions are final.

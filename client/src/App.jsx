@@ -1,17 +1,22 @@
 import { NavLink, Route, Routes } from 'react-router-dom';
 import { league } from './config.js';
 import Home from './pages/Home.jsx';
-import Rules from './pages/Rules.jsx';
 import Schedule from './pages/Schedule.jsx';
 import Leaderboard from './pages/Leaderboard.jsx';
-import Links from './pages/Links.jsx';
 import NotFound from './pages/NotFound.jsx';
+import MarkdownPage from './components/MarkdownPage.jsx';
+import rules from './content/rules.md?raw';
+import prizes from './content/prizes.md?raw';
+import acpc from './content/acpc.md?raw';
+import links from './content/links.md?raw';
 
 const nav = [
   ['/', 'Home'],
   ['/schedule', 'Schedule'],
   ['/leaderboard', 'Leaderboard'],
+  ['/prizes', 'Prizes'],
   ['/rules', 'Rules'],
+  ['/acpc', 'ACPC'],
   ['/links', 'Links'],
 ];
 
@@ -39,8 +44,10 @@ export default function App() {
           <Route path="/" element={<Home />} />
           <Route path="/schedule" element={<Schedule />} />
           <Route path="/leaderboard" element={<Leaderboard />} />
-          <Route path="/rules" element={<Rules />} />
-          <Route path="/links" element={<Links />} />
+          <Route path="/prizes" element={<MarkdownPage content={prizes} />} />
+          <Route path="/rules" element={<MarkdownPage content={rules} />} />
+          <Route path="/acpc" element={<MarkdownPage content={acpc} />} />
+          <Route path="/links" element={<MarkdownPage content={links} />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </main>
@@ -50,7 +57,7 @@ export default function App() {
           <p>
             {league.name} · <a href={`mailto:${league.contactEmail}`}>{league.contactEmail}</a>
           </p>
-          <p className="muted">Contests are hosted on Kattis. Standings are updated automatically during each round.</p>
+          <p className="muted">Contests are hosted on Kattis. Contests run on the second Saturday of each month, November to April.</p>
         </div>
       </footer>
     </>
