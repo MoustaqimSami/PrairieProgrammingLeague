@@ -14,12 +14,12 @@ export default function Home() {
       <section className="hero">
         <div>
           <h1>{league.name}</h1>
-          <p className="lead">A monthly programming contest for students in Alberta and Saskatchewan. Second Saturday of every month, November to April.</p>
+          <p className="lead">A monthly programming contest for students across the prairies. Second Saturday of every month, November to April.</p>
           {next && (
             <div className="next-round">
               <span className="label">Next contest</span>
               <strong>Contest {next.number}</strong> · {formatDate(next.starts_local)} at {formatTime(next.starts_local)}{' '}
-              {league.timeZoneLabel} time · in person, with upsolving until the next Friday
+              {league.timeZoneLabel} · in person, with upsolving until the next Friday
             </div>
           )}
           <div className="actions">

@@ -16,7 +16,7 @@ export default function ComingSoon({ next }) {
         {next ? (
           <>
             Contest {next.number} kicks off <strong>{formatDate(next.starts_local)}</strong> at{' '}
-            {formatTime(next.starts_local)} {league.timeZoneLabel} time. Every name on this board starts at zero.
+            {formatTime(next.starts_local)} {league.timeZoneLabel}. Every name on this board starts at zero.
           </>
         ) : (
           'The next season is being planned. Check back soon.'

@@ -1,6 +1,6 @@
 ## What is PPL?
 
-The Prairie Programming League is a monthly programming contest for students at schools in Alberta and Saskatchewan. Contests are mostly in person, at participating universities, and run on [Kattis](https://open.kattis.com).
+The Prairie Programming League is a monthly programming contest for high school and post-secondary students across the prairies. Contests are mostly in person, at participating universities, and run on [Kattis](https://open.kattis.com).
 
 ## How each contest works
 

@@ -11,7 +11,7 @@ export default function Schedule() {
       <h1>Schedule</h1>
       <p className="muted">
         Contests run on the second Saturday of each month. The in-person contest runs 11:00 a.m. to 1:30 p.m., then
-        upsolving stays open until noon the following Friday. All times are {league.timeZoneLabel} time.
+        upsolving stays open until noon the following Friday. All times are local {league.timeZoneLabel}.
       </p>
       <Status loading={loading} error={error} />
       {rounds && (
