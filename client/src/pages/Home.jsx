@@ -12,19 +12,25 @@ export default function Home() {
   return (
     <>
       <section className="hero">
-        <h1>{league.name}</h1>
-        <p className="lead">A monthly programming contest for students in Alberta and Saskatchewan. Second Saturday of every month, November to April.</p>
-        {next && (
-          <div className="next-round">
-            <span className="label">Next contest</span>
-            <strong>Contest {next.number}</strong> · {formatDate(next.starts_local)} at {formatTime(next.starts_local)}{' '}
-            {league.timeZoneLabel} time · in person, with upsolving until the next Friday
+        <div>
+          <h1>{league.name}</h1>
+          <p className="lead">A monthly programming contest for students in Alberta and Saskatchewan. Second Saturday of every month, November to April.</p>
+          {next && (
+            <div className="next-round">
+              <span className="label">Next contest</span>
+              <strong>Contest {next.number}</strong> · {formatDate(next.starts_local)} at {formatTime(next.starts_local)}{' '}
+              {league.timeZoneLabel} time · in person, with upsolving until the next Friday
+            </div>
+          )}
+          <div className="actions">
+            <Link className="button" to="/schedule">See the schedule</Link>
+            <Link className="button secondary" to="/prizes">How prizes work</Link>
           </div>
-        )}
-        <div className="actions">
-          <Link className="button" to="/schedule">See the schedule</Link>
-          <Link className="button secondary" to="/prizes">How prizes work</Link>
         </div>
+        <picture className="hero-emblem">
+          <source srcSet="/ppl-emblem-on-dark.svg" media="(prefers-color-scheme: dark)" />
+          <img src="/ppl-emblem.svg" alt="Prairie Programming League emblem: a wheat wreath around a sunrise over fields" width="260" height="260" />
+        </picture>
       </section>
 
       <section className="prose">

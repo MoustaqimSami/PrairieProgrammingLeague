@@ -26,7 +26,7 @@ export default function App() {
       <header className="site-header">
         <div className="wrap header-inner">
           <NavLink to="/" className="brand">
-            <span className="brand-mark" aria-hidden="true">{league.shortName}</span>
+            <img src="/ppl-emblem-on-dark.svg" alt="" width="44" height="44" />
             <span>{league.name}</span>
           </NavLink>
           <nav aria-label="Main">
@@ -53,11 +53,14 @@ export default function App() {
       </main>
 
       <footer className="site-footer">
-        <div className="wrap">
-          <p>
-            {league.name} · <a href={`mailto:${league.contactEmail}`}>{league.contactEmail}</a>
-          </p>
-          <p className="muted">Contests are hosted on Kattis. Contests run on the second Saturday of each month, November to April.</p>
+        <div className="wrap footer-inner">
+          <img src="/ppl-emblem-on-dark.svg" alt="" width="48" height="48" />
+          <div>
+            <p>
+              <strong>{league.name}</strong> · <a href={`mailto:${league.contactEmail}`}>{league.contactEmail}</a>
+            </p>
+            <p>Second Saturday of every month, November to April, on Kattis.</p>
+          </div>
         </div>
       </footer>
     </>
