@@ -3,6 +3,8 @@
 import { readdir, readFile } from 'node:fs/promises';
 import { pool } from './pool.js';
 
+console.log(`database: ${new URL(process.env.DATABASE_URL).host}`);
+
 const dir = new URL('./migrations/', import.meta.url);
 
 await pool.query(`

@@ -7,6 +7,8 @@
 //   UPDATE rounds SET kattis_url = '...', upsolve_kattis_url = '...' WHERE number = 1;
 import { pool } from './pool.js';
 
+console.log(`database: ${new URL(process.env.DATABASE_URL).host}`);
+
 const { rows: existing } = await pool.query('SELECT 1 FROM seasons LIMIT 1');
 if (existing.length) {
   console.log('database already has a season, skipping seed');

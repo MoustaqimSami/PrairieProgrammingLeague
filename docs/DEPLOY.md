@@ -40,10 +40,12 @@ The database starts empty, so run our migrations and seed against it from your c
 npm install -g vercel          # Vercel's command-line tool
 vercel login
 vercel link                    # run in the repo folder; pick the project you just made
-vercel env pull server/.env    # downloads DATABASE_URL into server/.env (Git ignores it)
+vercel env pull server/.env --environment=production   # downloads DATABASE_URL into server/.env (Git ignores it)
 npm run db:migrate
 npm run db:seed
 ```
+
+Both scripts print `database: <host>` first. Check it's a Neon host (`...neon.tech`), not `localhost`. If the pull only shows `VERCEL_OIDC_TOKEN`, the database variable isn't set for the environment you pulled; the `--environment=production` flag above avoids that.
 
 Careful: after this, your local `server/.env` points at the **live** database. To go back to your local one, change `DATABASE_URL` back (or keep the live one in a separate file).
 
