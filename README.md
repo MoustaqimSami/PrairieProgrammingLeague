@@ -116,7 +116,7 @@ Rounds without a Kattis link yet are skipped.
 ## Still to do
 
 - [ ] Kattis contest links for each round
-- [ ] Real contact email and Discord/social links
+- [ ] Discord or social links
 - [ ] Confirm with Kattis that we may display standings publicly
 - [ ] Decide whether the site should track draw tickets (needs a student roster)
 - [ ] Choose a host and deploy

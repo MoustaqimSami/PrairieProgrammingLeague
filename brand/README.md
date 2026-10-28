@@ -1,7 +1,7 @@
 # PPL brand
 
 The Prairie Programming League logo: a wheat wreath around a sunrise over prairie fields.
-The sun's rays are rings of dots, a nod to dot-matrix screens and the code side of the league.
+The sun's rays are circuit traces ending in solder pads, for the code side of the league.
 
 ## Files
 
@@ -30,4 +30,4 @@ they look right without the font installed. PNGs have transparent backgrounds.
 ## Font
 
 [Urbanist](https://fonts.google.com/specimen/Urbanist) (free, SIL Open Font License).
-The wordmark uses weight 700; the "Alberta · Saskatchewan" line uses 600 with wide letter spacing.
+The wordmark uses weight 700.
