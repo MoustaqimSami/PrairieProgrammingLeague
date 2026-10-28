@@ -2,6 +2,9 @@
 
 The Prairie Programming League logo: a wheat wreath around a sunrise over prairie fields.
 The sun's rays are circuit traces ending in solder pads, for the code side of the league.
+Snow-capped Rockies sit far off on either side of the sun.
+
+The horizontal logo sets the name in three lines, with "League" in sunrise orange.
 
 ## Files
 

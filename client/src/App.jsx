@@ -33,8 +33,9 @@ export default function App() {
       <header className="site-header">
         <div className="wrap header-inner">
           <NavLink to="/" className="brand">
-            <img src="/ppl-emblem-on-dark.svg" alt="" width="44" height="44" />
-            <span>{league.name}</span>
+            <img src="/ppl-emblem-on-dark.svg" alt="" width="56" height="56" />
+            {/* Same three-line layout as the logo, as real text so it stays sharp */}
+            <span className="brand-name">Prairie<br />Programming<br /><span className="brand-league">League</span></span>
           </NavLink>
           <button
             type="button"

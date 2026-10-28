@@ -26,7 +26,7 @@ export default function Home() {
         </div>
         <picture className="hero-emblem">
           <source srcSet="/ppl-emblem-on-dark.svg" media="(prefers-color-scheme: dark)" />
-          <img src="/ppl-emblem.svg" alt="Prairie Programming League emblem: a wheat wreath around a sunrise over fields" width="260" height="260" />
+          <img src="/ppl-emblem.svg" alt="Prairie Programming League emblem: a wheat wreath around a sunrise over fields, with snow-capped mountains on the horizon" width="260" height="260" />
         </picture>
       </section>
 
