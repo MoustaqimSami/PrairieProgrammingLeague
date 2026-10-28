@@ -1,13 +1,20 @@
 import { Link, useSearchParams } from 'react-router-dom';
 import { useApi } from '../api.js';
 import Status from '../components/Status.jsx';
+import ComingSoon from '../components/ComingSoon.jsx';
 
 // Shows season standings by default, or one round's standings with ?round=<id>.
+// Until any results exist, it shows a countdown to the next contest instead.
 export default function Leaderboard() {
   const [params, setParams] = useSearchParams();
   const roundId = params.get('round');
-  const { data: rounds } = useApi('/api/rounds');
+  const { data: rounds, loading, error } = useApi('/api/rounds');
   const played = rounds?.filter((r) => r.has_results) ?? [];
+
+  if (!rounds) return <Status loading={loading} error={error} />;
+  if (played.length === 0) {
+    return <ComingSoon next={rounds.find((r) => new Date(r.starts_at) > new Date())} />;
+  }
 
   return (
     <section>

@@ -77,6 +77,10 @@ You need **Node.js 22+** and **Postgres 16+**.
 
 ## The Kattis scraper
 
+> **Parked for now.** The scraper code and tests stay in the repo, but nothing runs it.
+> Until a round has results, the leaderboard page shows a countdown to the next contest
+> instead, and it switches to real standings automatically once results exist.
+
 Kattis has no API for contest standings, so the scraper reads the standings web page
 (`<contest url>/standings`). Kattis's [Terms of Service](https://po.kattis.com/help/tos)
 allow this if we:

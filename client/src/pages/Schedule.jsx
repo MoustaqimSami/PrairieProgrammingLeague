@@ -1,4 +1,3 @@
-import { Link } from 'react-router-dom';
 import { useApi } from '../api.js';
 import { formatDate, formatTime } from '../format.js';
 import { league } from '../config.js';
@@ -25,7 +24,6 @@ export default function Schedule() {
                 <th>In person</th>
                 <th>Upsolve until</th>
                 <th>On Kattis</th>
-                <th>Results</th>
               </tr>
             </thead>
             <tbody>
@@ -46,9 +44,6 @@ export default function Schedule() {
                     ) : (
                       <span className="muted">Link coming soon</span>
                     )}
-                  </td>
-                  <td>
-                    {r.has_results ? <Link to={`/leaderboard?round=${r.id}`}>Standings</Link> : <span className="muted">—</span>}
                   </td>
                 </tr>
               ))}
