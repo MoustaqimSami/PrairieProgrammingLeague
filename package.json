@@ -2,6 +2,7 @@
   "name": "prairie-programming-league",
   "private": true,
   "description": "Website and leaderboard for the Prairie Programming League",
+  "type": "module",
   "workspaces": [
     "client",
     "server"
@@ -16,7 +17,7 @@
     "test": "npm test -w server"
   },
   "engines": {
-    "node": ">=22"
+    "node": "22.x"
   },
   "devDependencies": {
     "concurrently": "^10.0.6"

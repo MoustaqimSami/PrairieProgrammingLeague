@@ -113,10 +113,14 @@ Rounds without a Kattis link yet are skipped.
   ```
 - The season scoring rule is the SQL query in `server/src/routes/leaderboard.js`.
 
+## Deploying
+
+The site is set up for Vercel, with the database on Neon. Step by step: [docs/DEPLOY.md](docs/DEPLOY.md).
+
 ## Still to do
 
 - [ ] Kattis contest links for each round
 - [ ] Discord or social links
 - [ ] Confirm with Kattis that we may display standings publicly
 - [ ] Decide whether the site should track draw tickets (needs a student roster)
-- [ ] Choose a host and deploy
+- [ ] Deploy to Vercel (see docs/DEPLOY.md)
