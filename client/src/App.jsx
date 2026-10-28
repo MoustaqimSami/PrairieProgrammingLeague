@@ -7,7 +7,6 @@ import NotFound from './pages/NotFound.jsx';
 import MarkdownPage from './components/MarkdownPage.jsx';
 import rules from './content/rules.md?raw';
 import prizes from './content/prizes.md?raw';
-import acpc from './content/acpc.md?raw';
 import links from './content/links.md?raw';
 
 const nav = [
@@ -16,7 +15,6 @@ const nav = [
   ['/leaderboard', 'Leaderboard'],
   ['/prizes', 'Prizes'],
   ['/rules', 'Rules'],
-  ['/acpc', 'ACPC'],
   ['/links', 'Links'],
 ];
 
@@ -46,7 +44,6 @@ export default function App() {
           <Route path="/leaderboard" element={<Leaderboard />} />
           <Route path="/prizes" element={<MarkdownPage content={prizes} />} />
           <Route path="/rules" element={<MarkdownPage content={rules} />} />
-          <Route path="/acpc" element={<MarkdownPage content={acpc} />} />
           <Route path="/links" element={<MarkdownPage content={links} />} />
           <Route path="*" element={<NotFound />} />
         </Routes>

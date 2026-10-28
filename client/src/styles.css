@@ -67,7 +67,10 @@ a:hover { color: var(--highlight-ink); }
   padding: 0 16px;
 }
 
-main.wrap { padding-top: 40px; padding-bottom: 72px; min-height: 70vh; }
+/* Sticky footer: the page is a column at least as tall as the window, and
+   main grows to fill any spare space, so the footer always sits at the bottom. */
+#root { display: flex; flex-direction: column; min-height: 100vh; min-height: 100dvh; }
+main.wrap { flex: 1 0 auto; width: 100%; padding-top: 40px; padding-bottom: 72px; }
 
 /* Header and navigation */
 .site-header {
