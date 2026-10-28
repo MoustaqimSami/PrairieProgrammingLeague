@@ -6,8 +6,8 @@
 
 ## Contests
 
-- [ACPC](https://cpc.cpsc.ucalgary.ca/contests/acpc): the Alberta Collegiate Programming Contest, every fall at the University of Calgary
-- [CCPC](https://cpc.cpsc.ucalgary.ca/contests/ccpc/2026): the Calgary Collegiate Programming Contest, every March at the University of Calgary
+- [ACPC](https://cpc.cpsc.ucalgary.ca/contests/acpc): the Alberta Collegiate Programming Contest, every fall
+- [CCPC](https://cpc.cpsc.ucalgary.ca/contests/ccpc/2026): the Calgary Collegiate Programming Contest, every fall
 - [UAPC](https://uapspc.github.io/uapc/index.html): the University of Alberta Programming Contest, every March
 - [ICPC](https://icpc.global): the International Collegiate Programming Contest
 
