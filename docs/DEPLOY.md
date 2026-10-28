@@ -21,7 +21,7 @@ The database lives outside Vercel, on **Neon** (hosted Postgres), which you add 
 
 1. Go to [vercel.com](https://vercel.com) and sign up with your GitHub account.
 2. **Add New… → Project**, then pick `PrairieProgrammingLeague` (if it isn't listed, click "Adjust GitHub App Permissions" and allow the repo).
-3. On the configure screen, leave everything as is. Framework Preset can stay **Other**: `vercel.json` already sets the build command and output folder.
+3. On the configure screen, set **Framework Preset** to **Other** and make sure **Root Directory** is the repo root (`./`), **not** `client`. Vercel may suggest `client` because it spots the React app there; if you accept it, `vercel.json` is ignored and the build fails with "No Output Directory named dist". Leave the build and output overrides off: `vercel.json` sets them.
 4. Click **Deploy**. In a minute you'll have a URL like `prairie-programming-league.vercel.app`.
 
 The pages will load, but the schedule will say it can't load yet: there's no database.
