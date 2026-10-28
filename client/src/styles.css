@@ -281,8 +281,89 @@ tbody tr:nth-child(even) { background: var(--row-alt); }
 
 @media (max-width: 480px) {
   nav a { padding: 6px 8px; }
-  .brand span { font-size: 16px; }
   .coming-soon { padding: 28px 18px; }
   .countdown-cell { min-width: 64px; flex: 1; }
   .countdown-value { font-size: 1.8rem; }
+}
+
+/* Skip link: hidden until a keyboard user tabs to it */
+.skip-link {
+  position: absolute;
+  left: 12px;
+  top: -60px;
+  z-index: 10;
+  background: var(--gold);
+  color: var(--navy);
+  font-weight: 800;
+  padding: 8px 14px;
+  border-radius: 8px;
+  text-decoration: none;
+}
+.skip-link:focus { top: 12px; }
+
+/* Menu button only shows on phones */
+.menu-button {
+  display: none;
+  font: inherit;
+  font-weight: 700;
+  color: var(--header-text);
+  background: transparent;
+  border: 1px solid rgb(255 255 255 / 0.25);
+  border-radius: 8px;
+  padding: 6px 12px;
+  cursor: pointer;
+}
+@media (max-width: 640px) {
+  .menu-button { display: inline-block; padding: 6px 10px; }
+  .brand { gap: 8px; font-size: 15px; }
+  .brand img { width: 36px; height: 36px; }
+  nav { display: none; width: 100%; flex-direction: column; padding: 4px 0 6px; }
+  nav.open { display: flex; }
+  nav a { padding: 10px 8px; }
+}
+
+/* Live and upsolve states */
+.next-round.live { border-left-color: var(--green); }
+.next-round.live .label::before,
+.live-banner::before {
+  content: '';
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  margin-right: 8px;
+  border-radius: 50%;
+  background: var(--sun);
+  vertical-align: middle;
+}
+.live-banner {
+  display: inline-block;
+  font-weight: 700;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 6px 14px;
+}
+
+/* Schedule as cards on phones: each row becomes a card, each cell gets its column name */
+@media (max-width: 640px) {
+  .schedule { border: none; background: transparent; overflow: visible; }
+  .schedule thead { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+  .schedule table, .schedule tbody, .schedule tr, .schedule td { display: block; }
+  .schedule tr {
+    background: var(--surface) !important;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 6px 0;
+    margin-bottom: 12px;
+  }
+  .schedule td { border: none; padding: 6px 14px; white-space: normal; display: flex; justify-content: space-between; gap: 12px; text-align: right; }
+  .schedule td::before {
+    content: attr(data-label);
+    font-size: 12px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--muted);
+    text-align: left;
+  }
 }

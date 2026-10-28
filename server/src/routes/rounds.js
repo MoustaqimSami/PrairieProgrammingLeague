@@ -13,6 +13,7 @@ const local = (expr) => `to_char((${expr}) AT TIME ZONE $1, 'YYYY-MM-DD"T"HH24:M
 roundsRouter.get('/', async (req, res) => {
   const { rows } = await pool.query(
     `SELECT r.id, r.number, r.starts_at, r.format, r.kattis_url, r.upsolve_kattis_url,
+            r.starts_at + make_interval(mins => r.duration_min) AS ends_at, r.upsolve_ends_at,
             ${local('r.starts_at')} AS starts_local,
             ${local("r.starts_at + make_interval(mins => r.duration_min)")} AS ends_local,
             ${local('r.upsolve_ends_at')} AS upsolve_ends_local,

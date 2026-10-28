@@ -4,10 +4,13 @@ import { useApi } from '../api.js';
 import { formatDate, formatTime } from '../format.js';
 import { league } from '../config.js';
 import { MarkdownContent } from '../components/MarkdownPage.jsx';
+import { contestStatus } from '../contestStatus.js';
+import { usePageTitle } from '../usePageTitle.js';
 
 export default function Home() {
+  usePageTitle(null);
   const { data: rounds } = useApi('/api/rounds');
-  const next = rounds?.find((r) => new Date(r.starts_at) > new Date());
+  const status = contestStatus(rounds);
 
   return (
     <>
@@ -15,13 +18,7 @@ export default function Home() {
         <div>
           <h1>{league.name}</h1>
           <p className="lead">A monthly programming contest for students across the prairies. Second Saturday of every month, November to April.</p>
-          {next && (
-            <div className="next-round">
-              <span className="label">Next contest</span>
-              <strong>Contest {next.number}</strong> · {formatDate(next.starts_local)} at {formatTime(next.starts_local)}{' '}
-              {league.timeZoneLabel} · in person, with upsolving until the next Friday
-            </div>
-          )}
+          {status && status.state !== 'over' && <StatusCard status={status} />}
           <div className="actions">
             <Link className="button" to="/schedule">See the schedule</Link>
             <Link className="button secondary" to="/prizes">How prizes work</Link>
@@ -37,5 +34,34 @@ export default function Home() {
         <MarkdownContent>{about}</MarkdownContent>
       </section>
     </>
+  );
+}
+
+// The "what's happening" card on the home page: live now, upsolving, or next up.
+function StatusCard({ status: { state, round } }) {
+  if (state === 'live') {
+    return (
+      <div className="next-round live">
+        <span className="label">Live now</span>
+        <strong>Contest {round.number}</strong> is running until {formatTime(round.ends_local)} {league.timeZoneLabel}.{' '}
+        {round.kattis_url && <a href={round.kattis_url}>Open it on Kattis</a>}
+      </div>
+    );
+  }
+  if (state === 'upsolve') {
+    return (
+      <div className="next-round">
+        <span className="label">Upsolving open</span>
+        <strong>Contest {round.number}</strong> upsolving closes {formatDate(round.upsolve_ends_local)} at{' '}
+        {formatTime(round.upsolve_ends_local)}. {round.upsolve_kattis_url && <a href={round.upsolve_kattis_url}>Upsolve on Kattis</a>}
+      </div>
+    );
+  }
+  return (
+    <div className="next-round">
+      <span className="label">Next contest</span>
+      <strong>Contest {round.number}</strong> · {formatDate(round.starts_local)} at {formatTime(round.starts_local)}{' '}
+      {league.timeZoneLabel} · in person, with upsolving until the next Friday
+    </div>
   );
 }

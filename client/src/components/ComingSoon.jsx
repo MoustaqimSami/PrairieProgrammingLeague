@@ -2,16 +2,32 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { formatDate, formatTime } from '../format.js';
 import { league } from '../config.js';
+import { contestStatus } from '../contestStatus.js';
 
 // Shown on the leaderboard until the first results are in:
 // a live countdown to the next contest and an empty board waiting to be filled.
-export default function ComingSoon({ next }) {
+export default function ComingSoon({ rounds }) {
+  const status = contestStatus(rounds);
+  const next = status.state === 'upcoming' ? status.round : rounds.find((r) => new Date(r.starts_at) > new Date());
   const left = useCountdown(next?.starts_at);
 
   return (
     <div className="coming-soon">
-      <p className="eyebrow">Season 2026–27</p>
-      <h2>The board is empty. For now.</h2>
+      <p className="eyebrow">Leaderboard · Season 2026–27</p>
+      <h1>The board is empty. For now.</h1>
+      {status.state === 'live' && (
+        <p className="live-banner">
+          <strong>Contest {status.round.number} is live now</strong>, until {formatTime(status.round.ends_local)}.{' '}
+          {status.round.kattis_url && <a href={status.round.kattis_url}>Open it on Kattis</a>}
+        </p>
+      )}
+      {status.state === 'upsolve' && (
+        <p className="live-banner">
+          <strong>Upsolving for Contest {status.round.number} is open</strong> until{' '}
+          {formatDate(status.round.upsolve_ends_local)}, {formatTime(status.round.upsolve_ends_local)}.{' '}
+          {status.round.upsolve_kattis_url && <a href={status.round.upsolve_kattis_url}>Upsolve on Kattis</a>}
+        </p>
+      )}
       <p className="lead">
         {next ? (
           <>

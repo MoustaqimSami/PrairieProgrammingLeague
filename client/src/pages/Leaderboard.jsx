@@ -2,10 +2,12 @@ import { Link, useSearchParams } from 'react-router-dom';
 import { useApi } from '../api.js';
 import Status from '../components/Status.jsx';
 import ComingSoon from '../components/ComingSoon.jsx';
+import { usePageTitle } from '../usePageTitle.js';
 
 // Shows season standings by default, or one round's standings with ?round=<id>.
 // Until any results exist, it shows a countdown to the next contest instead.
 export default function Leaderboard() {
+  usePageTitle('Leaderboard');
   const [params, setParams] = useSearchParams();
   const roundId = params.get('round');
   const { data: rounds, loading, error } = useApi('/api/rounds');
@@ -13,7 +15,7 @@ export default function Leaderboard() {
 
   if (!rounds) return <Status loading={loading} error={error} />;
   if (played.length === 0) {
-    return <ComingSoon next={rounds.find((r) => new Date(r.starts_at) > new Date())} />;
+    return <ComingSoon rounds={rounds} />;
   }
 
   return (
@@ -50,7 +52,7 @@ function SeasonTable({ rounds }) {
       <Status loading={loading} error={error} />
       {teams && teams.length === 0 && <p className="muted">No results yet. The first contest is on Saturday, November 14.</p>}
       {teams?.length > 0 && (
-        <div className="table-scroll">
+        <div className="table-scroll" tabIndex={0} role="region" aria-label="Standings">
           <table className="standings">
             <thead>
               <tr>
@@ -104,7 +106,7 @@ function RoundTable({ roundId, round }) {
       )}
       <Status loading={loading} error={error} />
       {results && (
-        <div className="table-scroll">
+        <div className="table-scroll" tabIndex={0} role="region" aria-label="Standings">
           <table className="standings">
             <thead>
               <tr>

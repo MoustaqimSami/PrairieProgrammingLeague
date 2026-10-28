@@ -3,7 +3,6 @@
 ## The league
 
 - [Kattis](https://open.kattis.com): every PPL contest is hosted here. Make an account before your first contest.
-- Email: [darcy.best.89@gmail.com](mailto:darcy.best.89@gmail.com)
 
 ## Contests
 

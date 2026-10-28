@@ -1,10 +1,13 @@
-import { NavLink, Route, Routes } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { NavLink, Route, Routes, useLocation } from 'react-router-dom';
+import { Analytics } from '@vercel/analytics/react';
 import { league } from './config.js';
 import Home from './pages/Home.jsx';
 import Schedule from './pages/Schedule.jsx';
 import Leaderboard from './pages/Leaderboard.jsx';
 import NotFound from './pages/NotFound.jsx';
 import MarkdownPage from './components/MarkdownPage.jsx';
+import ContactEmail from './components/ContactEmail.jsx';
 import rules from './content/rules.md?raw';
 import prizes from './content/prizes.md?raw';
 import links from './content/links.md?raw';
@@ -19,15 +22,30 @@ const nav = [
 ];
 
 export default function App() {
+  // On phones the nav collapses behind a Menu button. Close it after navigating.
+  const [menuOpen, setMenuOpen] = useState(false);
+  const location = useLocation();
+  useEffect(() => setMenuOpen(false), [location.pathname]);
+
   return (
     <>
+      <a className="skip-link" href="#main">Skip to content</a>
       <header className="site-header">
         <div className="wrap header-inner">
           <NavLink to="/" className="brand">
             <img src="/ppl-emblem-on-dark.svg" alt="" width="44" height="44" />
             <span>{league.name}</span>
           </NavLink>
-          <nav aria-label="Main">
+          <button
+            type="button"
+            className="menu-button"
+            aria-expanded={menuOpen}
+            aria-controls="main-nav"
+            onClick={() => setMenuOpen((open) => !open)}
+          >
+            <span aria-hidden="true">{menuOpen ? '✕' : '☰'}</span> Menu
+          </button>
+          <nav id="main-nav" aria-label="Main" className={menuOpen ? 'open' : undefined}>
             {nav.map(([to, label]) => (
               <NavLink key={to} to={to} end={to === '/'}>
                 {label}
@@ -37,14 +55,24 @@ export default function App() {
         </div>
       </header>
 
-      <main className="wrap">
+      <main id="main" className="wrap">
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/schedule" element={<Schedule />} />
           <Route path="/leaderboard" element={<Leaderboard />} />
-          <Route path="/prizes" element={<MarkdownPage content={prizes} />} />
-          <Route path="/rules" element={<MarkdownPage content={rules} />} />
-          <Route path="/links" element={<MarkdownPage content={links} />} />
+          <Route path="/prizes" element={<MarkdownPage title="Prizes" content={prizes} />} />
+          <Route path="/rules" element={<MarkdownPage title="Rules" content={rules} />} />
+          <Route
+            path="/links"
+            element={
+              <MarkdownPage title="Links" content={links}>
+                <h2>Contact</h2>
+                <p>
+                  Questions about the league: <ContactEmail />
+                </p>
+              </MarkdownPage>
+            }
+          />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </main>
@@ -54,12 +82,13 @@ export default function App() {
           <img src="/ppl-emblem-on-dark.svg" alt="" width="48" height="48" />
           <div>
             <p>
-              <strong>{league.name}</strong> · <a href={`mailto:${league.contactEmail}`}>{league.contactEmail}</a>
+              <strong>{league.name}</strong> · <NavLink to="/links">Contact</NavLink>
             </p>
             <p>Second Saturday of every month, November to April, on Kattis.</p>
           </div>
         </div>
       </footer>
+      <Analytics />
     </>
   );
 }

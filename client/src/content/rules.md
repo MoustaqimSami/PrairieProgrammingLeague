@@ -2,7 +2,7 @@
 
 ## Eligibility
 
-You must be enrolled at a post-secondary institution or high school, as an undergraduate or a full-time graduate student.
+You must be enrolled at a high school or post-secondary institution in Alberta or Saskatchewan, as an undergraduate or a full-time graduate student.
 
 ## Teams
 
