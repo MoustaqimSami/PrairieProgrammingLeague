@@ -27,6 +27,13 @@ export default function App() {
   const location = useLocation();
   useEffect(() => setMenuOpen(false), [location.pathname]);
 
+  // Start each page at the top, or at the #section a link points to (like /links#contact).
+  useEffect(() => {
+    const target = location.hash && document.getElementById(location.hash.slice(1));
+    if (target) target.scrollIntoView();
+    else window.scrollTo(0, 0);
+  }, [location.pathname, location.hash]);
+
   return (
     <>
       <a className="skip-link" href="#main">Skip to content</a>
@@ -67,7 +74,7 @@ export default function App() {
             path="/links"
             element={
               <MarkdownPage title="Links" content={links}>
-                <h2>Contact</h2>
+                <h2 id="contact">Contact</h2>
                 <p>
                   Questions about the league: <ContactEmail />
                 </p>
@@ -83,7 +90,7 @@ export default function App() {
           <img src="/ppl-emblem-on-dark.svg" alt="" width="48" height="48" />
           <div>
             <p>
-              <strong>{league.name}</strong> · <NavLink to="/links">Contact</NavLink>
+              <strong>{league.name}</strong> · <NavLink to="/links#contact">Contact</NavLink>
             </p>
             <p>Second Saturday of every month, November to April, on Kattis.</p>
           </div>

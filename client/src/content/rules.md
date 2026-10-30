@@ -24,7 +24,7 @@ You must be enrolled at a high school or post-secondary institution in Alberta o
 
 ## Problems
 
-- Usually 6 to 7 problems per contest, with about 4 at Kattis difficulty 3 or lower. This is a guideline, not a promise.
+- These contests are intended to be beginner friendly.
 - All contests are hosted on [open.kattis.com](https://open.kattis.com).
 
 ## Organizing committee

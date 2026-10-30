@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom';
 import { useApi } from '../api.js';
 import { formatDate, formatTime } from '../format.js';
 import { league } from '../config.js';
@@ -14,6 +15,10 @@ export default function Schedule() {
       <p className="muted">
         Contests run on the second Saturday of each month. The in-person contest runs 11:00 a.m. to 1:30 p.m., then
         upsolving stays open until noon the following Friday. All times are {league.timeZoneLabel}, which is the same in every host city.
+      </p>
+      <p className="muted">
+        To find out where your local contest is, contact your local coach. If you don't know who that is,{' '}
+        <Link to="/links#contact">contact us</Link>.
       </p>
       <Status loading={loading} error={error} />
       {rounds && (
