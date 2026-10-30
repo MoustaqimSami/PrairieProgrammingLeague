@@ -7,14 +7,14 @@ The season has a **$1,000 prize pool** across all 6 contests, given out as ten $
 | How | Tickets |
 | --- | --- |
 | Compete in an in-person contest | **10** per student |
-| Solve a problem in an in-person contest | **6** per problem, *split* among your team |
+| Solve a problem in an in-person contest | **6** per problem, for **each** person on your team |
 | Upsolve a problem you didn't solve in person | **2** per problem |
 
 - To earn in-person tickets you must be physically at the university.
-- Solving in person as a team splits the 6 tickets: a team of 3 gets 2 each, a team of 2 gets 3 each, and a solo competitor keeps all 6.
+- Every person on the team gets the full 6 tickets for each problem the team solves, so a bigger team means more tickets for everyone. A team of 3 that solves a problem earns 18 tickets between them.
 - Upsolving is individual, and only counts problems you didn't solve during the in-person contest.
 
-**Example:** Sam competes in person on a team of 3. The team solves 4 problems, so Sam earns 10 + (4 × 2) = 18 tickets. During the week Sam upsolves 2 more problems for 4 more tickets, for 22 total that month.
+**Example:** Sam competes in person on a team of 3. The team solves 4 problems, so Sam earns 10 + (4 × 6) = 34 tickets, and so does each of Sam's teammates. During the week Sam upsolves 2 more problems for 4 more tickets, for 38 total that month.
 
 ## The draws
 

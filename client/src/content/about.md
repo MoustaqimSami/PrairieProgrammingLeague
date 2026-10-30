@@ -15,7 +15,7 @@ These contests are intended to be beginner friendly.
 
 ## Who can compete
 
-Compete on your own or as a team of 2 or 3. Problems are chosen with individual competitors in mind, so going solo is a perfectly good way to play. See the [rules](/rules) for eligibility.
+Compete on your own or as a team of 2 or 3. Problems are chosen with individual competitors in mind, but teaming up pays off: every teammate earns tickets for each problem the team solves. See the [rules](/rules) for eligibility.
 
 ## How to join
 
