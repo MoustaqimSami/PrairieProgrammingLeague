@@ -59,9 +59,9 @@ Then check:
 - the Schedule page lists the six contests
 - the Leaderboard shows the countdown
 
-### 5. Optional: a custom domain
+### 5. Custom domain
 
-**Settings → Domains → Add**, type the domain (e.g. `prairieprogramming.ca`), and follow the DNS instructions Vercel shows for wherever the domain was bought.
+The site lives at **https://prairieprogrammingleague.com**. To change or add a domain: **Settings → Domains → Add**, type the domain, and follow the DNS instructions Vercel shows for wherever the domain was bought. If the main domain changes, also update `siteUrl` in `client/src/config.js` and the `og:image`, `og:url` and canonical URLs in `client/index.html`, so link previews keep working.
 
 ## After that
 
