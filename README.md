@@ -24,57 +24,6 @@ The website never calls Kattis. A separate scraper reads each round's standings 
 writes results into Postgres; the site only reads from Postgres. If Kattis is slow or
 down, the site keeps working and shows the last results it saved.
 
-## Local setup
-
-You need **Node.js 22+** and **Postgres 16+**.
-
-1. **Install Node.js** from [nodejs.org](https://nodejs.org) (the LTS version). Check with
-   `node -v`.
-2. **Install Postgres.** Easiest options: [Postgres.app](https://postgresapp.com) on Mac,
-   the [installer](https://www.postgresql.org/download/) on Windows, or Docker:
-   ```sh
-   docker run --name ppl-db -e POSTGRES_PASSWORD=dev -p 5432:5432 -d postgres:16
-   ```
-3. **Install dependencies** (one command installs both `client/` and `server/`, because
-   this repo is an npm workspace):
-   ```sh
-   npm install
-   ```
-4. **Create the database:**
-   ```sh
-   createdb -U postgres prairie_league
-   # or with Docker: docker exec -it ppl-db createdb -U postgres prairie_league
-   ```
-5. **Configure the server.** Copy the example settings and edit them:
-   ```sh
-   cp server/.env.example server/.env
-   ```
-   `.env` holds your database password, so Git ignores it.
-6. **Create the tables and sample data:**
-   ```sh
-   npm run db:migrate   # runs server/src/db/migrations/*.sql in order
-   npm run db:seed      # adds the 2026–27 schedule
-   ```
-7. **Start everything:**
-   ```sh
-   npm run dev
-   ```
-   This starts Express on port 3001 and Vite on port 5173. Open
-   <http://localhost:5173>. Vite forwards `/api/...` requests to Express.
-
-## Scripts
-
-| Command | What it does |
-| --- | --- |
-| `npm run dev` | API + website with live reload |
-| `npm test` | Runs the scraper tests (no network or database needed) |
-| `npm run db:migrate` | Applies any new migration files |
-| `npm run db:seed` | Adds the 2026–27 schedule to an empty database |
-| `npm run scrape -- --round 3` | Scrapes round 3 of the current season from Kattis |
-| `npm run scrape -- --recent` | Scrapes every round that ended in the last 48 hours |
-| `npm run scrape -- --file page.html` | Parses a saved standings page and prints it |
-| `npm run build` then `npm start` | Production: Express serves the built site and the API |
-
 ## The Kattis scraper
 
 > **Parked for now.** The scraper code and tests stay in the repo, but nothing runs it.
@@ -113,14 +62,3 @@ Rounds without a Kattis link yet are skipped.
   ```
 - The season scoring rule is the SQL query in `server/src/routes/leaderboard.js`.
 
-## Deploying
-
-The site is set up for Vercel, with the database on Neon. Step by step: [docs/DEPLOY.md](docs/DEPLOY.md).
-
-## Still to do
-
-- [ ] Kattis contest links for each round
-- [ ] Discord or social links
-- [ ] Confirm with Kattis that we may display standings publicly
-- [ ] Decide whether the site should track draw tickets (needs a student roster)
-- [ ] Deploy to Vercel (see docs/DEPLOY.md)
