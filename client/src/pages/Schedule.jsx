@@ -1,22 +1,13 @@
-import { useEffect } from 'react';
-import { useLocation } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { useApi } from '../api.js';
 import { formatDate, formatTime } from '../format.js';
 import { league } from '../config.js';
 import Status from '../components/Status.jsx';
-import { MarkdownContent } from '../components/MarkdownPage.jsx';
-import local from '../content/local.md?raw';
 import { usePageTitle } from '../usePageTitle.js';
 
 export default function Schedule() {
   usePageTitle('Schedule');
   const { data: rounds, loading, error } = useApi('/api/rounds');
-  const { hash } = useLocation();
-
-  // The table loads after the page, pushing Local information down, so scroll to it again once it's in.
-  useEffect(() => {
-    if (rounds && hash === '#local') document.getElementById('local')?.scrollIntoView();
-  }, [rounds, hash]);
 
   return (
     <section>
@@ -63,10 +54,9 @@ export default function Schedule() {
           </table>
         </div>
       )}
-      {/* Per-city details live in content/local.md so they're easy to edit */}
-      <div id="local" className="prose local-info">
-        <MarkdownContent>{local}</MarkdownContent>
-      </div>
+      <p className="muted">
+        Not sure where your city's contest is? See <Link to="/join">How to join</Link>.
+      </p>
     </section>
   );
 }

@@ -19,7 +19,7 @@ Compete on your own or as a team of 2 or 3. Problems are chosen with individual 
 
 ## How to join
 
-Contact your local coach. See [local information](/schedule#local) for who to contact in your city. If you're still not sure, [contact us](/links#contact).
+Contact your local coach. See [How to join](/join) for who to contact in your city.
 
 ## Prizes
 

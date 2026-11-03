@@ -13,7 +13,14 @@ export default function Leaderboard() {
   const { data: rounds, loading, error } = useApi('/api/rounds');
   const played = rounds?.filter((r) => r.has_results) ?? [];
 
-  if (!rounds) return <Status loading={loading} error={error} />;
+  if (!rounds) {
+    return (
+      <section>
+        <h1>Leaderboard</h1>
+        <Status loading={loading} error={error} />
+      </section>
+    );
+  }
   if (played.length === 0) {
     return <ComingSoon rounds={rounds} />;
   }

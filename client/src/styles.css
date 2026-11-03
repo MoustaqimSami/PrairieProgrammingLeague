@@ -369,7 +369,3 @@ tbody tr:nth-child(even) { background: var(--row-alt); }
     text-align: left;
   }
 }
-
-/* Local information under the schedule */
-.local-info { margin-top: 2.5rem; }
-.local-info h2 { margin-top: 0; }

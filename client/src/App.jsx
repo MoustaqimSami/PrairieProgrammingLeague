@@ -11,10 +11,12 @@ import ContactEmail from './components/ContactEmail.jsx';
 import rules from './content/rules.md?raw';
 import prizes from './content/prizes.md?raw';
 import links from './content/links.md?raw';
+import join from './content/join.md?raw';
 
 const nav = [
   ['/', 'Home'],
   ['/schedule', 'Schedule'],
+  ['/join', 'How to Join'],
   ['/leaderboard', 'Leaderboard'],
   ['/prizes', 'Prizes'],
   ['/rules', 'Rules'],
@@ -68,6 +70,7 @@ export default function App() {
           <Route path="/" element={<Home />} />
           <Route path="/schedule" element={<Schedule />} />
           <Route path="/leaderboard" element={<Leaderboard />} />
+          <Route path="/join" element={<MarkdownPage title="How to join" content={join} />} />
           <Route path="/prizes" element={<MarkdownPage title="Prizes" content={prizes} />} />
           <Route path="/rules" element={<MarkdownPage title="Rules" content={rules} />} />
           <Route
