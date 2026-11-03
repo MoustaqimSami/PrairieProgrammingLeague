@@ -1,13 +1,22 @@
-import { Link } from 'react-router-dom';
+import { useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import { useApi } from '../api.js';
 import { formatDate, formatTime } from '../format.js';
 import { league } from '../config.js';
 import Status from '../components/Status.jsx';
+import { MarkdownContent } from '../components/MarkdownPage.jsx';
+import local from '../content/local.md?raw';
 import { usePageTitle } from '../usePageTitle.js';
 
 export default function Schedule() {
   usePageTitle('Schedule');
   const { data: rounds, loading, error } = useApi('/api/rounds');
+  const { hash } = useLocation();
+
+  // The table loads after the page, pushing Local information down, so scroll to it again once it's in.
+  useEffect(() => {
+    if (rounds && hash === '#local') document.getElementById('local')?.scrollIntoView();
+  }, [rounds, hash]);
 
   return (
     <section>
@@ -15,10 +24,6 @@ export default function Schedule() {
       <p className="muted">
         Contests run on the second Saturday of each month. The in-person contest runs 11:00 a.m. to 1:30 p.m., then
         upsolving stays open until noon the following Friday. All times are {league.timeZoneLabel}, which is the same in every host city.
-      </p>
-      <p className="muted">
-        To find out where your local contest is, contact your local coach. If you don't know who that is,{' '}
-        <Link to="/links#contact">contact us</Link>.
       </p>
       <Status loading={loading} error={error} />
       {rounds && (
@@ -58,6 +63,10 @@ export default function Schedule() {
           </table>
         </div>
       )}
+      {/* Per-city details live in content/local.md so they're easy to edit */}
+      <div id="local" className="prose local-info">
+        <MarkdownContent>{local}</MarkdownContent>
+      </div>
     </section>
   );
 }
