@@ -4,7 +4,7 @@ Contact your local coach. Find yours in the table below.
 
 ## Local information
 
-Where to go and who to ask in each city. If your city isn't listed or you're not sure, [contact us](/links#contact). Coaches: email us any changes and we'll update your entry.
+Where to go and who to ask in each city. If your city isn't listed or you're not sure, [contact us](/links#contact).
 
 | City | Where | Who to contact |
 | --- | --- | --- |

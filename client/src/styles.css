@@ -167,7 +167,8 @@ nav a.active { color: var(--header-active); }
 }
 
 /* Markdown pages */
-.prose { max-width: 740px; }
+/* Text stays at a comfortable reading width; tables use the full page width */
+.prose > :not(.prose-table) { max-width: 740px; }
 .prose h1 { margin-top: 0; font-size: clamp(2rem, 5vw, 2.8rem); }
 .prose h2 { margin-top: 2.2rem; }
 .prose h2::after {
@@ -205,7 +206,7 @@ th, td { padding: 11px 14px; text-align: left; border-bottom: 1px solid var(--bo
 th { font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); background: var(--row-alt); }
 tbody tr:last-child td { border-bottom: none; }
 tbody tr:nth-child(even) { background: var(--row-alt); }
-.prose table { display: block; max-width: 100%; overflow-x: auto; margin: 1rem 0; border: 1px solid var(--border); border-radius: 12px; }
+.prose-table { max-width: 100%; overflow-x: auto; margin: 1rem 0; border: 1px solid var(--border); border-radius: 12px; }
 @media (max-width: 480px) { .prose td, .prose th { padding: 9px 10px; } }
 .prose td, .prose th { white-space: normal; vertical-align: top; }
 .num { text-align: right; font-variant-numeric: tabular-nums; }

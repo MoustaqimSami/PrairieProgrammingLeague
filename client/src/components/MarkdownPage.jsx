@@ -8,6 +8,12 @@ import { usePageTitle } from '../usePageTitle.js';
 const components = {
   a: ({ href, children }) =>
     href?.startsWith('/') ? <Link to={href}>{children}</Link> : <a href={href}>{children}</a>,
+  // Tables fill the text column; the wrapper scrolls sideways on narrow phones instead.
+  table: ({ children }) => (
+    <div className="prose-table" tabIndex={0} role="region" aria-label="Table">
+      <table>{children}</table>
+    </div>
+  ),
 };
 
 export function MarkdownContent({ children }) {
