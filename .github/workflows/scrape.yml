@@ -51,6 +51,9 @@ jobs:
             echo "::error::Add the DATABASE_URL secret first (Settings → Secrets and variables → Actions)"
             exit 1
           fi
+          # Applies any new database migrations first (does nothing when up to date),
+          # so a schema change is in place before the scraper uses it.
+          npm run db:migrate -w server
           if [ -n "$ROUND" ]; then
             npm run scrape -w server -- --round "$ROUND"
           else

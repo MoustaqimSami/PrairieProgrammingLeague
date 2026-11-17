@@ -75,19 +75,16 @@ The scraper doesn't run on Vercel: Vercel's free cron jobs only run once a day, 
 too slow during a contest. Instead GitHub runs it for free (the repo is public) from
 `.github/workflows/scrape.yml`. It needs to know where the database is:
 
-1. **Update the database.** From the repo folder, with `server/.env` pointing at the live
-   database (see step 3 above), run `npm run db:migrate`. You should see
-   `applied 003_upsolve_results.sql` and `applied 004_contest1_links.sql`. The second one
-   saves Contest 1's Kattis links.
-2. **Give GitHub the database address.** Copy the `DATABASE_URL` value from `server/.env`
+1. **Give GitHub the database address.** Copy the `DATABASE_URL` value from `server/.env`
    (or Vercel → Settings → Environment Variables). On GitHub open the repo →
    **Settings → Secrets and variables → Actions → New repository secret**, name it
    `DATABASE_URL`, paste the value and save. Secrets are hidden from logs and from
    anyone reading the repo.
-3. **Run it once by hand.** GitHub → **Actions** tab → **Update leaderboard from Kattis**
-   → **Run workflow**. Type `1` in the contest box to read Contest 1 now. Open the run:
+2. **Run it once by hand.** GitHub → **Actions** tab → **Update leaderboard from Kattis**
+   → **Run workflow**. Type `1` in the contest box to read Contest 1 now. Each run first
+   applies any new database migrations (`npm run db:migrate`), then scrapes. Open the run:
    the log should say `contest 1: saved N teams` and `contest 1 upsolve: saved N teams`.
-4. **Check the site.** The Leaderboard page now shows the standings. No redeploy is needed:
+3. **Check the site.** The Leaderboard page now shows the standings. No redeploy is needed:
    the site reads the database on every visit.
 
 From then on it runs by itself. If a run fails, GitHub emails you, and the log says why
