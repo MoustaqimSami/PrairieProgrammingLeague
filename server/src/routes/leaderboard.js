@@ -3,33 +3,52 @@ import { pool } from '../db/pool.js';
 
 export const leaderboardRouter = Router();
 
-// GET /api/leaderboard: season standings across all rounds, from the in-person
-// contests only (upsolve standings are shown per round, see routes/rounds.js).
+// GET /api/leaderboard: season standings per person, from the in-person contests only
+// (upsolve standings are shown per round, see routes/rounds.js).
 //
-// Scoring rule (a placeholder until the league picks one): most problems solved
-// over the season, ties broken by least total penalty time. To change the rule,
-// change the SUM()s and the ORDER BY below; the tables stay the same.
+// Every member of a team gets the team's result for that contest. If we couldn't read a
+// team's members from Kattis, the team appears under its team name instead.
+//
+// Scoring rule (a placeholder until tickets replace it): most problems solved over the
+// season, ties broken by least total penalty time. To change the rule, change the SUM()s
+// and the ORDER BY below; the tables stay the same.
 leaderboardRouter.get('/', async (req, res) => {
   const { rows } = await pool.query(`
-    WITH season AS (SELECT id FROM seasons ORDER BY starts_on DESC LIMIT 1)
-    SELECT t.id AS team_id,
-           COALESCE(t.display_name, t.kattis_name) AS team,
-           t.school,
-           SUM(res.solved)::int  AS solved,
-           SUM(res.penalty)::int AS penalty,
-           COUNT(*)::int         AS rounds_played,
-           json_object_agg(r.number, json_build_object(
-             'rank', res.rank, 'solved', res.solved, 'penalty', res.penalty
+    WITH season AS (SELECT id FROM seasons ORDER BY starts_on DESC LIMIT 1),
+    entries AS (
+      SELECT 'p' || p.id AS key, p.name, t.kattis_name AS team,
+             r.number, res.rank, res.solved, res.penalty
+      FROM results res
+      JOIN rounds r ON r.id = res.round_id
+      JOIN teams t ON t.id = res.team_id
+      JOIN team_members tm ON tm.round_id = res.round_id AND tm.kind = res.kind
+                          AND tm.kattis_team_id = res.kattis_team_id
+      JOIN people p ON p.id = tm.person_id
+      WHERE r.season_id = (SELECT id FROM season) AND res.kind = 'contest'
+      UNION ALL
+      SELECT 't' || t.id, COALESCE(t.display_name, t.kattis_name), t.kattis_name,
+             r.number, res.rank, res.solved, res.penalty
+      FROM results res
+      JOIN rounds r ON r.id = res.round_id
+      JOIN teams t ON t.id = res.team_id
+      WHERE r.season_id = (SELECT id FROM season) AND res.kind = 'contest'
+        AND NOT EXISTS (SELECT 1 FROM team_members tm
+                        WHERE tm.round_id = res.round_id AND tm.kind = res.kind
+                          AND tm.kattis_team_id = res.kattis_team_id)
+    )
+    SELECT key, name,
+           SUM(solved)::int  AS solved,
+           SUM(penalty)::int AS penalty,
+           COUNT(*)::int     AS rounds_played,
+           json_object_agg(number, json_build_object(
+             'rank', rank, 'solved', solved, 'penalty', penalty, 'team', team
            )) AS by_round
-    FROM results res
-    JOIN rounds r ON r.id = res.round_id
-    JOIN teams t  ON t.id = res.team_id
-    WHERE r.season_id = (SELECT id FROM season) AND res.kind = 'contest'
-    GROUP BY t.id
-    ORDER BY solved DESC, penalty ASC, team
+    FROM entries
+    GROUP BY key, name
+    ORDER BY solved DESC, penalty ASC, lower(name)
   `);
 
-  // Standard competition ranking: tied teams share a rank, and the next rank skips.
+  // Standard competition ranking: tied people share a rank, and the next rank skips.
   let rank = 0;
   const ranked = rows.map((row, i) => {
     const prev = rows[i - 1];

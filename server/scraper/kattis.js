@@ -14,11 +14,20 @@ export function standingsUrl(kattisUrl) {
   return `${kattisUrl.replace(/\/+$/, '')}/standings`;
 }
 
-export async function fetchStandingsHtml(kattisUrl) {
+export function fetchStandingsHtml(kattisUrl) {
+  return fetchKattis(standingsUrl(kattisUrl));
+}
+
+// A team's page lists its members: <contest url>/teams/<team id>
+export function fetchTeamHtml(kattisUrl, teamId) {
+  return fetchKattis(`${kattisUrl.replace(/\/+$/, '')}/teams/${teamId}`);
+}
+
+async function fetchKattis(pageUrl) {
   if (userAgent.includes('example.com')) {
     throw new Error('SCRAPER_USER_AGENT still has the example.com placeholder. Remove it or point it at the league site');
   }
-  const url = new URL(standingsUrl(kattisUrl));
+  const url = new URL(pageUrl);
   if (!(await allowedByRobots(url))) {
     throw new Error(`robots.txt on ${url.host} disallows ${url.pathname}`);
   }

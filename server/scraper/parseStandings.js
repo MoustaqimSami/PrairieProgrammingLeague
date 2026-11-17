@@ -1,7 +1,9 @@
 import * as cheerio from 'cheerio';
 
 // Turns the HTML of a Kattis standings page into rows like
-//   { team: 'Prairie Dogs', rank: 1, solved: 6, penalty: 501 }
+//   { team: 'Prairie Dogs', teamId: 976859, rank: 1, solved: 6, penalty: 501 }
+// teamId is Kattis's id for the team in this contest (from the link to its page),
+// or null if the name isn't a link.
 //
 // Kattis has no API for standings, so we read the page itself. Instead of relying
 // on CSS class names (which can change without notice), we find the table whose
@@ -41,17 +43,18 @@ export function parseStandings(html) {
       const solved = toInt($(cells[solvedCol]).text());
       const penalty = timeCol === -1 ? null : toInt($(cells[timeCol]).text());
       const team = teamName($, cells[teamCol]);
+      const teamId = teamIdOf($, cells[teamCol]);
       // Skip summary rows at the bottom of the table (attempts, first solves, ...).
       if (!team || solved === null || (timeCol !== -1 && penalty === null)) continue;
 
       if (rankCol === -1) {
-        rows.push({ team, rank: null, solved, penalty });
+        rows.push({ team, teamId, rank: null, solved, penalty });
         continue;
       }
       // Tied teams may share a rank number, or leave the cell blank.
       const rank = toInt($(cells[rankCol]).text()) ?? lastRank ?? rows.length + 1;
       lastRank = rank;
-      rows.push({ team, rank, solved, penalty });
+      rows.push({ team, teamId, rank, solved, penalty });
     }
     return rankCol === -1 ? rankBySolved(rows) : rows;
   }
@@ -84,6 +87,27 @@ function teamName($, cell) {
   const link = $(cell).find('a').first();
   const text = (link.length ? link.text() : $(cell).text()).replace(/\s+/g, ' ').trim();
   return text || null;
+}
+
+function teamIdOf($, cell) {
+  const href = $(cell).find('a[href*="/teams/"]').first().attr('href') ?? '';
+  const match = href.match(/\/teams\/(\d+)/);
+  return match ? Number(match[1]) : null;
+}
+
+// Reads the members from a team's page (<contest url>/teams/<team id>). Kattis puts them
+// in a JSON block in the page (<script id="team-data">), with each person's Kattis
+// username, which never changes, and the name they show. Returns rows like
+//   { username: 'jayden-wong-6606', name: 'Jayden Wong' }
+// Invitations a person hasn't accepted yet are left out.
+export function parseTeamMembers(html) {
+  const $ = cheerio.load(html);
+  const json = $('script#team-data').first().text();
+  if (!json) throw new Error('No team data found on the team page');
+  const { team_members: members = [] } = JSON.parse(json);
+  return members
+    .filter((m) => m.accepted !== false && m.username)
+    .map((m) => ({ username: m.username, name: (m.name || m.username).replace(/\s+/g, ' ').trim() }));
 }
 
 // Teams are matched across contests by their Kattis name, but two different teams can

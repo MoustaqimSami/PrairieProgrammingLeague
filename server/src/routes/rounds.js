@@ -34,7 +34,11 @@ roundsRouter.get('/:id/results', async (req, res) => {
   const kind = req.query.kind === 'upsolve' ? 'upsolve' : 'contest';
   const { rows } = await pool.query(
     `SELECT t.id AS team_id, COALESCE(t.display_name, t.kattis_name) AS team, t.school,
-            res.rank, res.solved, res.penalty
+            res.rank, res.solved, res.penalty,
+            COALESCE((SELECT json_agg(p.name ORDER BY lower(p.name))
+                      FROM team_members tm JOIN people p ON p.id = tm.person_id
+                      WHERE tm.round_id = res.round_id AND tm.kind = res.kind
+                        AND tm.kattis_team_id = res.kattis_team_id), '[]') AS members
      FROM results res JOIN teams t ON t.id = res.team_id
      WHERE res.round_id = $1 AND res.kind = $2
      ORDER BY res.rank, lower(t.kattis_name)`,

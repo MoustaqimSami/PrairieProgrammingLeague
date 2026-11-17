@@ -82,8 +82,9 @@ function SeasonTable({ rounds }) {
   return (
     <>
       <p className="muted">
-        In-person results, ranked by total problems solved, then by total penalty time (minutes). Prizes are
-        awarded by draw, not by rank: see <Link to="/prizes">how prizes work</Link>.
+        In-person results, ranked by total problems solved, then by total penalty time (minutes). Everyone on a
+        team gets the team's result. Prizes are awarded by draw, not by rank: see{' '}
+        <Link to="/prizes">how prizes work</Link>.
       </p>
       <Status loading={loading} error={error} />
       {teams && teams.length === 0 && <p className="muted">No in-person results yet.</p>}
@@ -93,7 +94,7 @@ function SeasonTable({ rounds }) {
             <thead>
               <tr>
                 <th className="num">#</th>
-                <th>Team</th>
+                <th>Name</th>
                 <th className="num">Solved</th>
                 <th className="num">Penalty</th>
                 {rounds.map((r) => (
@@ -103,18 +104,17 @@ function SeasonTable({ rounds }) {
             </thead>
             <tbody>
               {teams.map((t) => (
-                <tr key={t.team_id}>
+                <tr key={t.key}>
                   <td className="num rank">{t.rank}</td>
                   <td>
-                    <span className="team">{t.team}</span>
-                    {t.school && <span className="school">{t.school}</span>}
+                    <span className="team">{t.name}</span>
                   </td>
                   <td className="num strong">{t.solved}</td>
                   <td className="num">{t.penalty}</td>
                   {rounds.map((r) => {
                     const result = t.by_round[r.number];
                     return (
-                      <td key={r.id} className="num muted">
+                      <td key={r.id} className="num muted" title={result?.team && result.team !== t.name ? `Team ${result.team}` : undefined}>
                         {result ? <>{result.solved} <small>({result.rank})</small></> : '—'}
                       </td>
                     );
@@ -156,7 +156,7 @@ function RoundTable({ roundId, kind, round }) {
             <thead>
               <tr>
                 <th className="num">#</th>
-                <th>{upsolve ? 'Name' : 'Team'}</th>
+                <th>Name</th>
                 <th className="num">Solved</th>
                 {!upsolve && <th className="num">Penalty</th>}
               </tr>
@@ -165,7 +165,7 @@ function RoundTable({ roundId, kind, round }) {
               {results.map((r) => (
                 <tr key={r.team_id}>
                   <td className="num rank">{r.rank}</td>
-                  <td><span className="team">{r.team}</span></td>
+                  <td><Names result={r} /></td>
                   <td className="num strong">{r.solved}</td>
                   {!upsolve && <td className="num">{r.penalty}</td>}
                 </tr>
@@ -174,6 +174,20 @@ function RoundTable({ roundId, kind, round }) {
           </table>
         </div>
       )}
+    </>
+  );
+}
+
+// People's names (from Kattis team pages), with the team name underneath when it adds
+// something. Falls back to the team name if we don't know the members yet.
+function Names({ result }) {
+  const names = result.members.join(', ');
+  if (!names) return <span className="team">{result.team}</span>;
+  const sameAsTeam = result.members.length === 1 && result.members[0].toLowerCase() === result.team.toLowerCase();
+  return (
+    <>
+      <span className="team">{names}</span>
+      {!sameAsTeam && <span className="school">{result.team}</span>}
     </>
   );
 }
