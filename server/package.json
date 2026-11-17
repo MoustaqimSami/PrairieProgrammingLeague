@@ -9,7 +9,8 @@
     "db:seed": "node --env-file-if-exists=.env src/db/seed.js",
     "scrape": "node --env-file-if-exists=.env scraper/cli.js",
     "scrape:schedule": "node --env-file-if-exists=.env scraper/schedule.js",
-    "test": "node --test"
+    "test": "node --test",
+    "sheet:sync": "node --env-file-if-exists=.env sheet/sync.js"
   },
   "dependencies": {
     "cheerio": "^1.2.0",

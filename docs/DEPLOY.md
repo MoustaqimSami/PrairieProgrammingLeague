@@ -92,3 +92,51 @@ From then on it runs by itself. If a run fails, GitHub emails you, and the log s
 workflows in a repo with no commits for 60 days; if that happens, the Actions tab has an
 "Enable workflow" button.
 - Vercel's free Hobby plan is for non-commercial projects, which fits a student league.
+
+## Connecting the attendance sheet
+
+The attendance Google Sheet is the source of truth for who attended, each student's
+school (which gives the leaderboard's location filter) and the Kattis links for each
+month (its "Contest Links" tab). The scheduled job copies it into the database every
+10 to 15 minutes, so an edit to the sheet shows on the site within about 15 minutes.
+The site only ever **reads** the sheet.
+
+The sheet is private, so the job signs in as a *service account*: a robot Google account
+that you share the sheet with as a Viewer. One-time setup, about 15 minutes:
+
+1. **Make a Google Cloud project.** Go to [console.cloud.google.com](https://console.cloud.google.com),
+   sign in, and use the project picker at the top → **New project**. Name it
+   `prairie-programming-league`, then **Create**, and make sure it's selected.
+2. **Turn on the Sheets API.** Open [the Google Sheets API page](https://console.cloud.google.com/apis/library/sheets.googleapis.com)
+   and click **Enable**.
+3. **Create the service account.** Menu → **IAM & Admin → Service Accounts → Create service
+   account**. Name it `ppl-sheet-reader`, click **Create and continue**, skip the optional
+   role and user steps, and click **Done**. Copy its email address (it ends in
+   `iam.gserviceaccount.com`).
+4. **Make a key.** Click the service account → **Keys** tab → **Add key → Create new key → JSON
+   → Create**. A `.json` file downloads. Treat it like a password: don't commit it or send it
+   in chat. (If your Google account is managed by a school, key creation can be blocked by
+   policy; a personal Gmail account avoids that.)
+5. **Share the sheet with it.** In the sheet, **Share**, paste the service account's email,
+   choose **Viewer**, untick "Notify people", and **Share**. This is the only change to the
+   sheet, and it's a sharing setting, not an edit.
+6. **Add two GitHub secrets.** Repo → **Settings → Secrets and variables → Actions → New
+   repository secret**:
+   - `GOOGLE_SHEET_ID`: the long id in the sheet's address,
+     `https://docs.google.com/spreadsheets/d/`**`<this part>`**`/edit`.
+   - `GOOGLE_SERVICE_ACCOUNT_JSON`: open the downloaded `.json` file in a text editor and
+     paste the whole thing.
+7. **Run it once.** **Actions → Update leaderboard from Kattis → Run workflow**. The "Copy the
+   attendance sheet" step should say `sheet: N people, M attendance marks`, followed by any
+   rows worth fixing (a missing Kattis ID, an email address instead of a username, or a
+   username nobody has used in a contest yet).
+
+What the job reads from the sheet:
+
+- **Attendance tab**: the header row with `Name`, `University` and `Kattis ID`, and one
+  column per month (`Nov` … `Apr`). Initials under a month = attended that contest in
+  person. Columns are found by their header, so adding columns is fine.
+- **Contest Links tab**: a row per month with `Main` and `Upsolve` Kattis links. A link here
+  replaces the saved one; an empty cell leaves it alone.
+- Schools are grouped into cities in `server/src/locations.js`. A new school shows under its
+  own name until a line is added there.

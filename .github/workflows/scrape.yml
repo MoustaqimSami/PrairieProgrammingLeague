@@ -1,21 +1,22 @@
-# Copies contest standings from Kattis into the live database, so the leaderboard
-# updates on its own. GitHub runs this on a schedule (times are UTC):
+# Copies the attendance Google Sheet and the Kattis contest standings into the live
+# database, so the site updates on its own. GitHub runs this on a schedule (times are UTC):
 #   - every 10 minutes on Saturdays from 11:00 to 14:59 league time (17:00-20:59 UTC),
 #     while the in-person contest runs
-#   - every 30 minutes the rest of the time, which covers the week of upsolving
+#   - every 15 minutes the rest of the time, so sheet edits and upsolves show up quickly
 # The scraper itself decides which contests need checking, so most runs fetch nothing
 # from Kattis and finish in seconds. GitHub may start scheduled runs a few minutes late.
 #
 # To run it by hand: GitHub → Actions → "Update leaderboard from Kattis" → Run workflow.
 #
-# Needs one repository secret, DATABASE_URL (the same value Vercel uses).
+# Needs the repository secret DATABASE_URL (the same value Vercel uses), and for the
+# sheet GOOGLE_SHEET_ID and GOOGLE_SERVICE_ACCOUNT_JSON (see docs/DEPLOY.md).
 # Optional repository variable SCRAPER_USER_AGENT overrides the default bot name.
 name: Update leaderboard from Kattis
 
 on:
   schedule:
     - cron: '*/10 17-20 * * 6'
-    - cron: '*/30 * * * *'
+    - cron: '*/15 * * * *'
   workflow_dispatch:
     inputs:
       round:
@@ -41,19 +42,32 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci --workspace=server --include-workspace-root=false
-      - name: Scrape Kattis
+      - name: Update the database
+        id: migrate
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
-          SCRAPER_USER_AGENT: ${{ vars.SCRAPER_USER_AGENT }}
-          ROUND: ${{ inputs.round }}
         run: |
           if [ -z "$DATABASE_URL" ]; then
             echo "::error::Add the DATABASE_URL secret first (Settings → Secrets and variables → Actions)"
             exit 1
           fi
-          # Applies any new database migrations first (does nothing when up to date),
-          # so a schema change is in place before the scraper uses it.
+          # Applies any new database migrations (does nothing when up to date),
+          # so a schema change is in place before anything uses it.
           npm run db:migrate -w server
+      - name: Copy the attendance sheet
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          GOOGLE_SHEET_ID: ${{ secrets.GOOGLE_SHEET_ID }}
+          GOOGLE_SERVICE_ACCOUNT_JSON: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_JSON }}
+        run: npm run sheet:sync -w server
+      - name: Scrape Kattis
+        # Runs even if the sheet step failed, so standings keep updating.
+        if: ${{ !cancelled() && steps.migrate.outcome != 'failure' }}
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          SCRAPER_USER_AGENT: ${{ vars.SCRAPER_USER_AGENT }}
+          ROUND: ${{ inputs.round }}
+        run: |
           if [ -n "$ROUND" ]; then
             npm run scrape -w server -- --round "$ROUND"
           else
