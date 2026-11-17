@@ -4,7 +4,7 @@
 // Contests are on the second Saturday of each month, November to April:
 // in person 11:00 a.m. to 1:30 p.m., then upsolving until noon the next Friday.
 // Kattis links are added later, once each contest is created on Kattis:
-//   UPDATE rounds SET kattis_url = '...', upsolve_kattis_url = '...' WHERE number = 1;
+//   npm run scrape -- --links --round 2 --contest <url> --upsolve <url>
 import { pool } from './pool.js';
 
 console.log(`database: ${new URL(process.env.DATABASE_URL).host}`);
@@ -35,6 +35,14 @@ for (const [i, day] of contestDays.entries()) {
     [season.id, i + 1, day],
   );
 }
+
+// Contest 1's Kattis links (migration 004 adds the same to databases seeded earlier).
+await pool.query(
+  `UPDATE rounds SET kattis_url = 'https://open.kattis.com/contests/whasy4',
+                     upsolve_kattis_url = 'https://open.kattis.com/contests/yzvj6n'
+   WHERE season_id = $1 AND number = 1`,
+  [season.id],
+);
 
 console.log(`seeded the ${contestDays.length}-contest 2026–27 season`);
 await pool.end();

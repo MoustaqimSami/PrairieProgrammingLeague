@@ -53,7 +53,7 @@ function StatusCard({ status: { state, round } }) {
       <div className="next-round">
         <span className="label">Upsolving open</span>
         <strong>Contest {round.number}</strong> upsolving closes {formatDate(round.upsolve_ends_local)} at{' '}
-        {formatTime(round.upsolve_ends_local)}. {round.upsolve_kattis_url && <a href={round.upsolve_kattis_url}>Upsolve on Kattis</a>}
+        {formatTime(round.upsolve_ends_local)} · {round.upsolve_kattis_url && <a href={round.upsolve_kattis_url}>Upsolve on Kattis</a>}
       </div>
     );
   }

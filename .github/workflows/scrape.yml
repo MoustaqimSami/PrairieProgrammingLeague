@@ -1,0 +1,61 @@
+# Copies contest standings from Kattis into the live database, so the leaderboard
+# updates on its own. GitHub runs this on a schedule (times are UTC):
+#   - every 10 minutes on Saturdays from 11:00 to 14:59 league time (17:00-20:59 UTC),
+#     while the in-person contest runs
+#   - every 30 minutes the rest of the time, which covers the week of upsolving
+# The scraper itself decides which contests need checking, so most runs fetch nothing
+# from Kattis and finish in seconds. GitHub may start scheduled runs a few minutes late.
+#
+# To run it by hand: GitHub → Actions → "Update leaderboard from Kattis" → Run workflow.
+#
+# Needs one repository secret, DATABASE_URL (the same value Vercel uses).
+# Optional repository variable SCRAPER_USER_AGENT overrides the default bot name.
+name: Update leaderboard from Kattis
+
+on:
+  schedule:
+    - cron: '*/10 17-20 * * 6'
+    - cron: '*/30 * * * *'
+  workflow_dispatch:
+    inputs:
+      round:
+        description: 'Contest number to re-read now (leave empty to check whatever is running)'
+        required: false
+
+# Never run two scrapes at once.
+concurrency:
+  group: scrape
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  scrape:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci --workspace=server --include-workspace-root=false
+      - name: Scrape Kattis
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          SCRAPER_USER_AGENT: ${{ vars.SCRAPER_USER_AGENT }}
+          ROUND: ${{ inputs.round }}
+        run: |
+          if [ -z "$DATABASE_URL" ]; then
+            echo "::error::Add the DATABASE_URL secret first (Settings → Secrets and variables → Actions)"
+            exit 1
+          fi
+          # Applies any new database migrations first (does nothing when up to date),
+          # so a schema change is in place before the scraper uses it.
+          npm run db:migrate -w server
+          if [ -n "$ROUND" ]; then
+            npm run scrape -w server -- --round "$ROUND"
+          else
+            npm run scrape -w server -- --recent
+          fi

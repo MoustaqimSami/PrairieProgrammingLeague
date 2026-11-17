@@ -66,6 +66,29 @@ The site lives at **https://prairieprogrammingleague.com**. To change or add a d
 ## After that
 
 - **Every push to `main` deploys automatically.** Pull requests get their own preview URL.
-- **Adding Kattis links:** connect to the live database (Neon's dashboard has an SQL editor) and run the `UPDATE rounds ...` statement from the README.
-- **The scraper doesn't run on Vercel.** Serverless functions can't run in the background. If we bring the scraper back, it would use a [Vercel Cron Job](https://vercel.com/docs/cron-jobs) calling a small API route.
+- **Adding Kattis links:** with `server/.env` pointing at the live database, run
+  `npm run scrape -- --links --round 2 --contest <in-person url> --upsolve <upsolve url>`.
+
+## Turning on the live leaderboard
+
+The scraper doesn't run on Vercel: Vercel's free cron jobs only run once a day, which is
+too slow during a contest. Instead GitHub runs it for free (the repo is public) from
+`.github/workflows/scrape.yml`. It needs to know where the database is:
+
+1. **Give GitHub the database address.** Copy the `DATABASE_URL` value from `server/.env`
+   (or Vercel → Settings → Environment Variables). On GitHub open the repo →
+   **Settings → Secrets and variables → Actions → New repository secret**, name it
+   `DATABASE_URL`, paste the value and save. Secrets are hidden from logs and from
+   anyone reading the repo.
+2. **Run it once by hand.** GitHub → **Actions** tab → **Update leaderboard from Kattis**
+   → **Run workflow**. Type `1` in the contest box to read Contest 1 now. Each run first
+   applies any new database migrations (`npm run db:migrate`), then scrapes. Open the run:
+   the log should say `contest 1: saved N teams` and `contest 1 upsolve: saved N teams`.
+3. **Check the site.** The Leaderboard page now shows the standings. No redeploy is needed:
+   the site reads the database on every visit.
+
+From then on it runs by itself. If a run fails, GitHub emails you, and the log says why
+(for example "Kattis returned 403" if Kattis blocks the bot). GitHub pauses scheduled
+workflows in a repo with no commits for 60 days; if that happens, the Actions tab has an
+"Enable workflow" button.
 - Vercel's free Hobby plan is for non-commercial projects, which fits a student league.

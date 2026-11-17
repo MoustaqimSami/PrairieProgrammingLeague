@@ -17,7 +17,9 @@ roundsRouter.get('/', async (req, res) => {
             ${local('r.starts_at')} AS starts_local,
             ${local("r.starts_at + make_interval(mins => r.duration_min)")} AS ends_local,
             ${local('r.upsolve_ends_at')} AS upsolve_ends_local,
-            r.last_scraped_at, EXISTS (SELECT 1 FROM results WHERE round_id = r.id) AS has_results
+            r.last_scraped_at, r.upsolve_last_scraped_at,
+            EXISTS (SELECT 1 FROM results WHERE round_id = r.id AND kind = 'contest') AS has_results,
+            EXISTS (SELECT 1 FROM results WHERE round_id = r.id AND kind = 'upsolve') AS has_upsolve_results
      FROM rounds r
      WHERE r.season_id = (SELECT id FROM seasons ORDER BY starts_on DESC LIMIT 1)
      ORDER BY r.number`,
@@ -26,15 +28,17 @@ roundsRouter.get('/', async (req, res) => {
   res.json(rows);
 });
 
-// GET /api/rounds/:id/results: standings for a single round.
+// GET /api/rounds/:id/results: standings for a single round's in-person contest.
+// GET /api/rounds/:id/results?kind=upsolve: the same round's upsolve contest.
 roundsRouter.get('/:id/results', async (req, res) => {
+  const kind = req.query.kind === 'upsolve' ? 'upsolve' : 'contest';
   const { rows } = await pool.query(
     `SELECT t.id AS team_id, COALESCE(t.display_name, t.kattis_name) AS team, t.school,
             res.rank, res.solved, res.penalty
      FROM results res JOIN teams t ON t.id = res.team_id
-     WHERE res.round_id = $1
-     ORDER BY res.rank, t.kattis_name`,
-    [req.params.id],
+     WHERE res.round_id = $1 AND res.kind = $2
+     ORDER BY res.rank, lower(t.kattis_name)`,
+    [req.params.id, kind],
   );
   res.json(rows);
 });

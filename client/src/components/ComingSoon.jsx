@@ -17,14 +17,14 @@ export default function ComingSoon({ rounds }) {
       <h1>The board is empty. For now.</h1>
       {status.state === 'live' && (
         <p className="live-banner">
-          <strong>Contest {status.round.number} is live now</strong>, until {formatTime(status.round.ends_local)}.{' '}
+          <strong>Contest {status.round.number} is live now</strong>, until {formatTime(status.round.ends_local)} ·{' '}
           {status.round.kattis_url && <a href={status.round.kattis_url}>Open it on Kattis</a>}
         </p>
       )}
       {status.state === 'upsolve' && (
         <p className="live-banner">
           <strong>Upsolving for Contest {status.round.number} is open</strong> until{' '}
-          {formatDate(status.round.upsolve_ends_local)}, {formatTime(status.round.upsolve_ends_local)}.{' '}
+          {formatDate(status.round.upsolve_ends_local)}, {formatTime(status.round.upsolve_ends_local)} ·{' '}
           {status.round.upsolve_kattis_url && <a href={status.round.upsolve_kattis_url}>Upsolve on Kattis</a>}
         </p>
       )}
