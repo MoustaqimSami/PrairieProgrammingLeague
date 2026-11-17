@@ -3,7 +3,8 @@ import { pool } from '../db/pool.js';
 
 export const leaderboardRouter = Router();
 
-// GET /api/leaderboard: season standings across all rounds.
+// GET /api/leaderboard: season standings across all rounds, from the in-person
+// contests only (upsolve standings are shown per round, see routes/rounds.js).
 //
 // Scoring rule (a placeholder until the league picks one): most problems solved
 // over the season, ties broken by least total penalty time. To change the rule,
@@ -23,7 +24,7 @@ leaderboardRouter.get('/', async (req, res) => {
     FROM results res
     JOIN rounds r ON r.id = res.round_id
     JOIN teams t  ON t.id = res.team_id
-    WHERE r.season_id = (SELECT id FROM season)
+    WHERE r.season_id = (SELECT id FROM season) AND res.kind = 'contest'
     GROUP BY t.id
     ORDER BY solved DESC, penalty ASC, team
   `);

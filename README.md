@@ -26,39 +26,53 @@ down, the site keeps working and shows the last results it saved.
 
 ## The Kattis scraper
 
-> **Parked for now.** The scraper code and tests stay in the repo, but nothing runs it.
-> Until a round has results, the leaderboard page shows a countdown to the next contest
-> instead, and it switches to real standings automatically once results exist.
+Each contest day has two Kattis contests: the in-person contest (11:00 to 1:30) and the
+upsolve contest (until noon the next Friday). The scraper reads both standings pages and
+saves them in the `results` table, with `kind` set to `contest` or `upsolve`. The
+leaderboard's season standings use the in-person results; each round's upsolve standings
+can be picked from the "Show" menu.
+
+**How it runs:** a GitHub Actions workflow, `.github/workflows/scrape.yml`, runs
+`npm run scrape -- --recent` every 10 minutes during Saturday contests and every 30
+minutes otherwise. The scraper works out which contests are running or just ended and
+only fetches those, so most runs don't touch Kattis at all. Vercel can't do this on the
+free plan (its cron jobs run at most once a day). Setup steps are in `docs/DEPLOY.md`.
 
 Kattis has no API for contest standings, so the scraper reads the standings web page
 (`<contest url>/standings`). Kattis's [Terms of Service](https://po.kattis.com/help/tos)
 allow this if we:
 
-- **identify ourselves**: set `SCRAPER_USER_AGENT` in `server/.env` to the league site and
-  a contact email. The scraper refuses to run until you do.
+- **identify ourselves**: requests are sent as `PrairieProgrammingLeagueBot/1.0` with a link
+  to the site's contact section. Set `SCRAPER_USER_AGENT` to change it.
 - **obey robots.txt**: the scraper checks it before each fetch.
-- **go easy**: it only checks rounds that ended in the last 48 hours, and waits 5 seconds
-  between requests.
+- **go easy**: a contest is checked while it runs and for 6 hours after (plus one final
+  read if we missed it), with 5 seconds between requests.
 
 The terms also limit public display of Kattis content without permission, so the league
-should confirm with Kattis before the leaderboard goes public.
+should confirm with Kattis that showing standings on this site is fine.
 
 The parser (`server/scraper/parseStandings.js`) finds the table by its column headers
-(Team, Slv., Time) instead of CSS classes, so small page changes don't break it. It was
-written against a sample page; see `server/scraper/fixtures/README.md` for how to check
-it against a real league contest.
+(Team, Slv., and Time when there is one) instead of CSS classes, so small page changes
+don't break it. Upsolve pages have no rank or time column and list people alphabetically,
+so the parser ranks them by problems solved. If two entries in one contest share a name,
+the second is saved as "Name (2)".
 
-Rounds without a Kattis link yet are skipped.
+Useful commands (run from the repo root; they use `DATABASE_URL` from `server/.env`):
+
+```sh
+npm run scrape -- --recent        # what the scheduled job runs
+npm run scrape -- --round 1       # re-read both contests of round 1 right now
+npm run scrape -- --file page.html   # parse a saved page and print it (no network, no database)
+npm run scrape -- --links --round 2 --contest https://open.kattis.com/contests/abc123 \
+                                    --upsolve https://open.kattis.com/contests/def456
+```
 
 ## Changing the content
 
 - About (home page), rules, prizes, ACPC and links are Markdown files in `client/src/content/`.
 - League name and contact email are in `client/src/config.js`.
-- Contest dates are rows in the `rounds` table. When a contest is created on Kattis, add its links:
-  ```sql
-  UPDATE rounds SET kattis_url = 'https://open.kattis.com/contests/abc123',
-                    upsolve_kattis_url = 'https://open.kattis.com/contests/def456'
-  WHERE number = 1;
-  ```
+- Contest dates are rows in the `rounds` table. When a contest is created on Kattis, add its
+  links with `npm run scrape -- --links ...` (see above). The schedule, home page and
+  scraper all pick them up from there.
 - The season scoring rule is the SQL query in `server/src/routes/leaderboard.js`.
 

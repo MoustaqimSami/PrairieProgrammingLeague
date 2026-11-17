@@ -5,15 +5,18 @@
 //   3. keep our request rate low.
 // See https://po.kattis.com/help/tos (section 6).
 
-const userAgent = process.env.SCRAPER_USER_AGENT;
+// SCRAPER_USER_AGENT can override this, e.g. to add a contact email.
+const userAgent =
+  process.env.SCRAPER_USER_AGENT ||
+  'PrairieProgrammingLeagueBot/1.0 (+https://prairieprogrammingleague.com/links#contact)';
 
 export function standingsUrl(kattisUrl) {
   return `${kattisUrl.replace(/\/+$/, '')}/standings`;
 }
 
 export async function fetchStandingsHtml(kattisUrl) {
-  if (!userAgent || userAgent.includes('example.com')) {
-    throw new Error('Set SCRAPER_USER_AGENT in server/.env to your league site and contact email first');
+  if (userAgent.includes('example.com')) {
+    throw new Error('SCRAPER_USER_AGENT still has the example.com placeholder. Remove it or point it at the league site');
   }
   const url = new URL(standingsUrl(kattisUrl));
   if (!(await allowedByRobots(url))) {
@@ -38,13 +41,23 @@ async function allowedByRobots(url) {
 
 export function disallowedPaths(robotsTxt) {
   const paths = [];
+  // Consecutive "User-agent:" lines share the rules that follow them, so we
+  // track whether the current group of names includes "*".
   let appliesToUs = false;
+  let readingAgents = false;
   for (const raw of robotsTxt.split('\n')) {
     const line = raw.replace(/#.*/, '').trim();
+    if (!line) continue;
     const [key, ...rest] = line.split(':');
     const value = rest.join(':').trim();
-    if (/^user-agent$/i.test(key)) appliesToUs = value === '*';
-    else if (appliesToUs && /^disallow$/i.test(key) && value) paths.push(value);
+    if (/^user-agent$/i.test(key)) {
+      if (!readingAgents) appliesToUs = false; // a new group starts
+      readingAgents = true;
+      if (value === '*') appliesToUs = true;
+    } else {
+      readingAgents = false;
+      if (appliesToUs && /^disallow$/i.test(key) && value) paths.push(value);
+    }
   }
   return paths;
 }

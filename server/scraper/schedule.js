@@ -1,14 +1,14 @@
-// Keeps running and scrapes recent rounds every 15 minutes.
-// Use this on a machine that stays on. On a host with built-in cron jobs
-// (like Render), schedule `npm run scrape -- --recent` there instead.
+// Keeps running and checks Kattis every 10 minutes. Use this on a machine that stays on.
+// The live site doesn't need it: a GitHub Actions workflow (.github/workflows/scrape.yml)
+// runs `npm run scrape -- --recent` on a schedule instead.
 import cron from 'node-cron';
-import { recentRounds, scrapeRounds } from './scrapeRound.js';
+import { recentJobs, scrapeJobs } from './scrapeRound.js';
 
 async function tick() {
-  const rounds = await recentRounds();
-  if (rounds.length) await scrapeRounds(rounds);
+  const jobs = await recentJobs();
+  if (jobs.length) await scrapeJobs(jobs);
 }
 
-cron.schedule('*/15 * * * *', () => tick().catch((err) => console.error(err)));
-console.log('scraper scheduled: every 15 minutes');
+cron.schedule('*/10 * * * *', () => tick().catch((err) => console.error(err)));
+console.log('scraper scheduled: every 10 minutes');
 tick().catch((err) => console.error(err));
