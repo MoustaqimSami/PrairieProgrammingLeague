@@ -57,6 +57,14 @@ don't break it. Upsolve pages have no rank or time column and list people alphab
 so the parser ranks them by problems solved. If two entries in one contest share a name,
 the second is saved as "Name (2)".
 
+**People:** the standings only show team names, so after saving a contest the scraper
+opens each new team's page (`<contest url>/teams/<id>`) and reads its members from the
+JSON block Kattis puts there: their Kattis username (which never changes) and the name
+they show. They go in the `people` and `team_members` tables. Each team is read once per
+contest, so the first run after a contest makes one extra request per team. The
+leaderboard shows people's names, with the team name underneath, and the season
+standings are per person (everyone on a team gets the team's result).
+
 Useful commands (run from the repo root; they use `DATABASE_URL` from `server/.env`):
 
 ```sh
