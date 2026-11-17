@@ -75,12 +75,21 @@ npm run scrape -- --links --round 2 --contest https://open.kattis.com/contests/a
                                     --upsolve https://open.kattis.com/contests/def456
 ```
 
+## The attendance sheet
+
+A Google Sheet kept by the coaches is the source of truth for attendance, each student's
+school and the monthly Kattis links. `npm run sheet:sync` (`server/sheet/`) copies it into
+the `roster`, `attendance` and `rounds` tables; the scheduled job runs it before every
+scrape. Students are matched to Kattis by the sheet's Kattis ID column (their username).
+The leaderboard uses the school for its School column and Location filter. Setup is in
+`docs/DEPLOY.md`, "Connecting the attendance sheet".
+
 ## Changing the content
 
 - About (home page), rules, prizes, ACPC and links are Markdown files in `client/src/content/`.
 - League name and contact email are in `client/src/config.js`.
 - Contest dates are rows in the `rounds` table. When a contest is created on Kattis, add its
-  links with `npm run scrape -- --links ...` (see above). The schedule, home page and
-  scraper all pick them up from there.
+  links to the sheet's Contest Links tab (or use `npm run scrape -- --links ...`). The
+  schedule, home page and scraper all pick them up from there.
 - The season scoring rule is the SQL query in `server/src/routes/leaderboard.js`.
 

@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import { pool } from '../db/pool.js';
+import { locationOf } from '../locations.js';
 
 export const leaderboardRouter = Router();
 
@@ -17,6 +18,10 @@ leaderboardRouter.get('/', async (req, res) => {
     WITH season AS (SELECT id FROM seasons ORDER BY starts_on DESC LIMIT 1),
     entries AS (
       SELECT 'p' || p.id AS key, p.name, t.kattis_name AS team,
+             -- school from the attendance sheet, matched on Kattis username
+             (SELECT ro.university FROM roster ro
+              WHERE ro.kattis_id = lower(p.kattis_username) AND ro.university IS NOT NULL
+              ORDER BY ro.sheet_row LIMIT 1) AS university,
              r.number, res.rank, res.solved, res.penalty
       FROM results res
       JOIN rounds r ON r.id = res.round_id
@@ -26,7 +31,7 @@ leaderboardRouter.get('/', async (req, res) => {
       JOIN people p ON p.id = tm.person_id
       WHERE r.season_id = (SELECT id FROM season) AND res.kind = 'contest'
       UNION ALL
-      SELECT 't' || t.id, COALESCE(t.display_name, t.kattis_name), t.kattis_name,
+      SELECT 't' || t.id, COALESCE(t.display_name, t.kattis_name), t.kattis_name, NULL,
              r.number, res.rank, res.solved, res.penalty
       FROM results res
       JOIN rounds r ON r.id = res.round_id
@@ -36,7 +41,7 @@ leaderboardRouter.get('/', async (req, res) => {
                         WHERE tm.round_id = res.round_id AND tm.kind = res.kind
                           AND tm.kattis_team_id = res.kattis_team_id)
     )
-    SELECT key, name,
+    SELECT key, name, MAX(university) AS university,
            SUM(solved)::int  AS solved,
            SUM(penalty)::int AS penalty,
            COUNT(*)::int     AS rounds_played,
@@ -53,7 +58,7 @@ leaderboardRouter.get('/', async (req, res) => {
   const ranked = rows.map((row, i) => {
     const prev = rows[i - 1];
     if (!prev || prev.solved !== row.solved || prev.penalty !== row.penalty) rank = i + 1;
-    return { rank, ...row };
+    return { rank, ...row, location: locationOf(row.university) };
   });
   res.json(ranked);
 });

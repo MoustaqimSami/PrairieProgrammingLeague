@@ -191,6 +191,7 @@ nav a.active { color: var(--header-active); }
   gap: 12px;
 }
 .title-row h1 { margin-bottom: 8px; }
+.pickers { display: flex; flex-wrap: wrap; gap: 8px 16px; }
 .picker { display: flex; align-items: center; gap: 8px; color: var(--muted); }
 .picker select {
   font: inherit;

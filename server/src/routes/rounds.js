@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import { pool } from '../db/pool.js';
+import { locationOf } from '../locations.js';
 
 export const roundsRouter = Router();
 
@@ -38,11 +39,16 @@ roundsRouter.get('/:id/results', async (req, res) => {
             COALESCE((SELECT json_agg(p.name ORDER BY lower(p.name))
                       FROM team_members tm JOIN people p ON p.id = tm.person_id
                       WHERE tm.round_id = res.round_id AND tm.kind = res.kind
-                        AND tm.kattis_team_id = res.kattis_team_id), '[]') AS members
+                        AND tm.kattis_team_id = res.kattis_team_id), '[]') AS members,
+            COALESCE((SELECT json_agg(DISTINCT ro.university)
+                      FROM team_members tm JOIN people p ON p.id = tm.person_id
+                      JOIN roster ro ON ro.kattis_id = lower(p.kattis_username)
+                      WHERE tm.round_id = res.round_id AND tm.kind = res.kind
+                        AND tm.kattis_team_id = res.kattis_team_id AND ro.university IS NOT NULL), '[]') AS universities
      FROM results res JOIN teams t ON t.id = res.team_id
      WHERE res.round_id = $1 AND res.kind = $2
      ORDER BY res.rank, lower(t.kattis_name)`,
     [req.params.id, kind],
   );
-  res.json(rows);
+  res.json(rows.map((row) => ({ ...row, locations: [...new Set(row.universities.map(locationOf))] })));
 });

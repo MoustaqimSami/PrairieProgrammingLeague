@@ -15,7 +15,17 @@ export default function Leaderboard() {
   const [params, setParams] = useSearchParams();
   const roundId = params.get('round');
   const kind = params.get('kind') === 'upsolve' ? 'upsolve' : 'contest';
+  const location = params.get('location') ?? '';
   const { data: rounds, loading, error } = useApi('/api/rounds');
+  const season = useApi('/api/leaderboard');
+  // Locations come from the schools in the attendance sheet (see server/src/locations.js).
+  const locations = [...new Set((season.data ?? []).map((t) => t.location).filter(Boolean))].sort();
+  const setParam = (key, value) => {
+    const next = new URLSearchParams(params);
+    if (value) next.set(key, value);
+    else next.delete(key);
+    setParams(next);
+  };
   const played = rounds?.filter((r) => r.has_results || r.has_upsolve_results) ?? [];
   const status = contestStatus(rounds);
 
@@ -35,24 +45,38 @@ export default function Leaderboard() {
     <section>
       <div className="title-row">
         <h1>Leaderboard</h1>
-        <label className="picker">
-          <span>Show</span>
-          <select
-            value={roundId ? `${roundId}:${kind}` : ''}
-            onChange={(e) => {
-              const [round, k] = e.target.value.split(':');
-              setParams(!round ? {} : k === 'upsolve' ? { round, kind: k } : { round });
-            }}
-          >
-            <option value="">Season standings</option>
-            {played.map((r) => [
-              r.has_results && <option key={`${r.id}:contest`} value={`${r.id}:contest`}>Contest {r.number}</option>,
-              r.has_upsolve_results && (
-                <option key={`${r.id}:upsolve`} value={`${r.id}:upsolve`}>Contest {r.number} upsolve</option>
-              ),
-            ])}
-          </select>
-        </label>
+        <div className="pickers">
+          {locations.length > 0 && (
+            <label className="picker">
+              <span>Location</span>
+              <select value={location} onChange={(e) => setParam('location', e.target.value)}>
+                <option value="">Everywhere</option>
+                {locations.map((l) => (
+                  <option key={l} value={l}>{l}</option>
+                ))}
+              </select>
+            </label>
+          )}
+          <label className="picker">
+            <span>Show</span>
+            <select
+              value={roundId ? `${roundId}:${kind}` : ''}
+              onChange={(e) => {
+                const [round, k] = e.target.value.split(':');
+                const next = location ? { location } : {};
+                setParams(!round ? next : k === 'upsolve' ? { ...next, round, kind: k } : { ...next, round });
+              }}
+            >
+              <option value="">Season standings</option>
+              {played.map((r) => [
+                r.has_results && <option key={`${r.id}:contest`} value={`${r.id}:contest`}>Contest {r.number}</option>,
+                r.has_upsolve_results && (
+                  <option key={`${r.id}:upsolve`} value={`${r.id}:upsolve`}>Contest {r.number} upsolve</option>
+                ),
+              ])}
+            </select>
+          </label>
+        </div>
       </div>
       {status?.state === 'live' && (
         <p className="live-banner">
@@ -68,16 +92,17 @@ export default function Leaderboard() {
         </p>
       )}
       {roundId ? (
-        <RoundTable roundId={roundId} kind={kind} round={rounds.find((r) => String(r.id) === roundId)} />
+        <RoundTable roundId={roundId} kind={kind} location={location} round={rounds.find((r) => String(r.id) === roundId)} />
       ) : (
-        <SeasonTable rounds={played.filter((r) => r.has_results)} />
+        <SeasonTable rounds={played.filter((r) => r.has_results)} season={season} location={location} />
       )}
     </section>
   );
 }
 
-function SeasonTable({ rounds }) {
-  const { data: teams, loading, error } = useApi('/api/leaderboard');
+function SeasonTable({ rounds, season, location }) {
+  const { loading, error } = season;
+  const teams = season.data && rankWithin(season.data.filter((t) => !location || t.location === location));
 
   return (
     <>
@@ -87,7 +112,9 @@ function SeasonTable({ rounds }) {
         <Link to="/prizes">how prizes work</Link>.
       </p>
       <Status loading={loading} error={error} />
-      {teams && teams.length === 0 && <p className="muted">No in-person results yet.</p>}
+      {teams && teams.length === 0 && (
+        <p className="muted">{location ? `No in-person results from ${location} yet.` : 'No in-person results yet.'}</p>
+      )}
       {teams?.length > 0 && (
         <div className="table-scroll" tabIndex={0} role="region" aria-label="Standings">
           <table className="standings">
@@ -95,6 +122,7 @@ function SeasonTable({ rounds }) {
               <tr>
                 <th className="num">#</th>
                 <th>Name</th>
+                <th>School</th>
                 <th className="num">Solved</th>
                 <th className="num">Penalty</th>
                 {rounds.map((r) => (
@@ -109,6 +137,7 @@ function SeasonTable({ rounds }) {
                   <td>
                     <span className="team">{t.name}</span>
                   </td>
+                  <td className="muted">{t.university ?? '—'}</td>
                   <td className="num strong">{t.solved}</td>
                   <td className="num">{t.penalty}</td>
                   {rounds.map((r) => {
@@ -129,11 +158,12 @@ function SeasonTable({ rounds }) {
   );
 }
 
-function RoundTable({ roundId, kind, round }) {
+function RoundTable({ roundId, kind, round, location }) {
   const upsolve = kind === 'upsolve';
-  const { data: results, loading, error } = useApi(`/api/rounds/${roundId}/results${upsolve ? '?kind=upsolve' : ''}`);
+  const { data: allResults, loading, error } = useApi(`/api/rounds/${roundId}/results${upsolve ? '?kind=upsolve' : ''}`);
   const kattisUrl = upsolve ? round?.upsolve_kattis_url : round?.kattis_url;
   const updated = upsolve ? round?.upsolve_last_scraped_at : round?.last_scraped_at;
+  const results = allResults?.filter((r) => !location || r.locations.includes(location));
 
   return (
     <>
@@ -157,6 +187,7 @@ function RoundTable({ roundId, kind, round }) {
               <tr>
                 <th className="num">#</th>
                 <th>Name</th>
+                <th>School</th>
                 <th className="num">Solved</th>
                 {!upsolve && <th className="num">Penalty</th>}
               </tr>
@@ -166,6 +197,7 @@ function RoundTable({ roundId, kind, round }) {
                 <tr key={r.team_id}>
                   <td className="num rank">{r.rank}</td>
                   <td><Names result={r} /></td>
+                  <td className="muted">{r.universities.join(', ') || '—'}</td>
                   <td className="num strong">{r.solved}</td>
                   {!upsolve && <td className="num">{r.penalty}</td>}
                 </tr>
@@ -176,6 +208,17 @@ function RoundTable({ roundId, kind, round }) {
       )}
     </>
   );
+}
+
+// Re-ranks a filtered season list (e.g. one city), so places start at 1 again.
+// Same rule as the server: ties on solved and penalty share a place.
+function rankWithin(rows) {
+  let rank = 0;
+  return rows.map((row, i) => {
+    const prev = rows[i - 1];
+    if (!prev || prev.solved !== row.solved || prev.penalty !== row.penalty) rank = i + 1;
+    return { ...row, rank };
+  });
 }
 
 // People's names (from Kattis team pages), with the team name underneath when it adds
